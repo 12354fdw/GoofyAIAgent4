@@ -15,6 +15,11 @@ export class Session {
 			content: prompt,
 		});
 
-		return await this.streamController.stream(this.messages);
+		const stream = await this.streamController.stream(this.messages);
+		stream.responseMessages.then((msgs) => {
+			this.messages.push(...msgs);
+		});
+
+		return stream;
 	}
 }
