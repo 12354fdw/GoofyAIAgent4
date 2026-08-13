@@ -1,6 +1,7 @@
 import { ModelMessage } from "ai";
 import { StreamController } from "./streamController.js";
-import { ToolRegistry } from "../tools.js";
+import { ToolRegistry } from "../toolRegistry.js";
+import { InstructionPaths } from "../util.js";
 
 export class Session {
 	private streamController: StreamController;
@@ -9,8 +10,9 @@ export class Session {
 	constructor(
 		private _modelString: string,
 		private toolRegistry: ToolRegistry,
+		instruction: InstructionPaths,
 	) {
-		this.streamController = new StreamController(_modelString, toolRegistry);
+		this.streamController = new StreamController(_modelString, toolRegistry, instruction);
 	}
 
 	public async stream(prompt: string) {

@@ -1,9 +1,7 @@
 import { ENTRY_server } from "./server/index.js";
 import { SessionController } from "./server/session/sessionController.js";
-import { ToolRegistry } from "./server/tools.js";
 
-const toolRegistry = new ToolRegistry();
-const controller = new SessionController(toolRegistry);
+const controller = SessionController.getInstance();
 
 const session = controller.getSession("default-session");
 
@@ -18,4 +16,4 @@ async function runAgent(prompt: string) {
 
 ENTRY_server();
 
-await runAgent("what is the router gateway ip address and what ports are exposed on it? only search common ports");
+await runAgent("test out the websearch and raw_web_search");

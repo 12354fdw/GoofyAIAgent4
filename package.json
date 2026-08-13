@@ -25,6 +25,7 @@
   "dependencies": {
     "@openrouter/ai-sdk-provider": "^3.0.0",
     "ai": "^7.0.62",
+    "axios": "^1.19.0",
     "comlink": "^4.4.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
