@@ -18,4 +18,4 @@ async function runAgent(prompt: string) {
 
 ENTRY_server();
 
-await runAgent("what is the current EST time?");
+await runAgent("what is the router gateway ip address and what ports are exposed on it? only search common ports");
