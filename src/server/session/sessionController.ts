@@ -1,16 +1,17 @@
+import { ToolRegistry } from "../tools.js";
 import { Session } from "./session.js";
 
 export class SessionController {
 	private sessions = new Map<string, Session>();
 
-	constructor() {
+	constructor(private toolRegistry: ToolRegistry) {
 		this.createSession("default-session");
 	}
 
 	public createSession(key: string) {
 		if (this.sessions.get(key)) throw new Error(`Session '${key}' already exists!`);
 
-		const session = new Session("inclusionai/ling-3.0-flash");
+		const session = new Session("inclusionai/ling-3.0-flash", this.toolRegistry);
 		this.sessions.set(key, session);
 		return session;
 	}
