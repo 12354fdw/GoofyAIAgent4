@@ -6,15 +6,24 @@ import { SLOGGER } from "../server/slogger.js";
 export const Tool_ExecuteBash = tool({
 	description: "executes bash on the host computer, do not use interactive commands (including sudo)",
 	inputSchema: z.object({
-		cmd: z.string(),
+		cmd: z.string().describe("the command, CANNOT be any interactive commands including sudo"),
+		timeout: z.number().default(10).describe("timeout, defaults to 10"),
 	}),
 
 	needsApproval: false, // will be changed later
-	execute: async ({ cmd }) => {
+	execute: async ({ cmd, timeout }) => {
 		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
 			console.log();
-			SLOGGER.warn(`executing bash '${cmd}'`);
-			exec(cmd, (error, stdout, stderr) => {
+			SLOGGER.warn(`executing bash '${cmd}' with timeout ${timeout}s`);
+			exec(cmd, { timeout: timeout * 1000 }, (error, stdout, stderr) => {
+				if (error && error.killed) {
+					resolve({
+						stdout,
+						stderr: stderr || `Command timed out after ${timeout}s`,
+						exitCode: 124,
+					});
+					return;
+				}
 				resolve({
 					stdout,
 					stderr,
