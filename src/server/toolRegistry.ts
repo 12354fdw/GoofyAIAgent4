@@ -1,8 +1,8 @@
 import { Tool } from "ai";
 import { Tool_GetTime } from "../tools/getTime.js";
 import { Tool_ExecuteBash } from "../tools/executeBash.js";
-import { Tool_WebSearch } from "../tools/websearch.js";
-import { Tool_RawWebSearch } from "../tools/rawWebSearch.js";
+import { Tool_WebSearch } from "../tools/webSearch/websearch.js";
+import { Tool_RawWebSearch } from "../tools/webSearch/rawWebSearch.js";
 
 export class ToolRegistry {
 	private static instance: ToolRegistry;

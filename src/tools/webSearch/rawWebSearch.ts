@@ -1,12 +1,6 @@
 import { tool } from "ai";
-import axios from "axios";
 import z from "zod";
-
-interface SearXNGResult {
-	title: string;
-	url: string;
-	content?: string;
-}
+import { webSearch } from "./common.js";
 
 export const Tool_RawWebSearch = tool({
 	description: "searches the web, and its the raw searxng result",
@@ -15,18 +9,7 @@ export const Tool_RawWebSearch = tool({
 	}),
 
 	execute: async ({ query }) => {
-		const searXNGUrl = "localhost:8080";
-
-		const response = await axios.get(`http://${searXNGUrl}/search`, {
-			params: {
-				q: query,
-				format: "json",
-				language: "en-US",
-			},
-			timeout: 6000,
-		});
-
-		const results: SearXNGResult[] = response.data?.results || [];
+		const results = await webSearch(query);
 
 		if (results.length === 0) return `No search results found for query: ${query}`;
 

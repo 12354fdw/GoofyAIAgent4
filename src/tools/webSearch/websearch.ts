@@ -1,13 +1,7 @@
 import { tool } from "ai";
-import axios from "axios";
 import z from "zod";
-import { SessionController } from "../server/session/sessionController.js";
-
-interface SearXNGResult {
-	title: string;
-	url: string;
-	content?: string;
-}
+import { SessionController } from "../../server/session/sessionController.js";
+import { webSearch } from "./common.js";
 
 export const Tool_WebSearch = tool({
 	description: "searches the web, but it's summarized by an agent",
@@ -16,18 +10,7 @@ export const Tool_WebSearch = tool({
 	}),
 
 	execute: async ({ query }) => {
-		const searXNGUrl = "localhost:8080";
-
-		const response = await axios.get(`http://${searXNGUrl}/search`, {
-			params: {
-				q: query,
-				format: "json",
-				language: "en-US",
-			},
-			timeout: 6000,
-		});
-
-		const results: SearXNGResult[] = response.data?.results || [];
+		const results = await webSearch(query);
 
 		if (results.length === 0) return `No search results found for query: ${query}`;
 
