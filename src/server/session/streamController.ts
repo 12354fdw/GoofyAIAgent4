@@ -1,24 +1,24 @@
 import { ModelMessage, ToolLoopAgent } from "ai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
 import { ToolRegistry } from "../toolRegistry.js";
-import { InstructionPaths, readPrompt } from "../util.js";
+import { readPrompt } from "../util.js";
+import { SessionParameters } from "./sessionController.js";
 
 export class StreamController {
 	private agent!: ToolLoopAgent;
 
 	constructor(
-		private _modelString: string,
+		private params: SessionParameters,
 		private toolRegistry: ToolRegistry,
-		private instruction: InstructionPaths,
 	) {
 		this.createAgent();
 	}
 
 	public async stream(messages: ModelMessage[]) {
 		return await this.agent.stream({
-			instructions: readPrompt(this.instruction),
+			instructions: readPrompt(this.params.instruction!),
 			messages,
-			tools: this.toolRegistry.getTools(),
+			tools: this.toolRegistry.getTools(this.params.toolBlacklist),
 			onError: (e: { error: Error }) => {
 				throw e.error;
 			},
@@ -29,7 +29,7 @@ export class StreamController {
 
 	private createAgent() {
 		this.agent = new ToolLoopAgent({
-			model: openrouter(this._modelString),
+			model: openrouter(this.params.model),
 			maxRetries: 0,
 		});
 	}

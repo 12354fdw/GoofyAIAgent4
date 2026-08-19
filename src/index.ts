@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { ENTRY_server } from "./server/index.js";
 import { SessionController } from "./server/session/sessionController.js";
 
@@ -16,4 +17,4 @@ async function runAgent(prompt: string) {
 
 ENTRY_server();
 
-await runAgent("test out the websearch and raw_web_search");
+await runAgent(readFileSync("prompt.txt", "utf-8"));

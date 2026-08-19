@@ -18,5 +18,12 @@ export async function webSearch(query: string) {
 	});
 
 	const results: SearXNGResult[] = response.data?.results || [];
-	return results;
+
+	const cleanResults = results.slice(0, 5).map((item) => ({
+		title: item.title,
+		url: item.url,
+		snippet: item.content || "No snippet available",
+	}));
+
+	return cleanResults;
 }
