@@ -1,7 +1,7 @@
 import { Tool } from "ai";
-import { ToolRegistry } from "../toolRegistry.js";
-import { InstructionPaths } from "../util.js";
 import { Session } from "./session.js";
+import { InstructionPaths } from "../../util.js";
+import { ToolRegistry } from "../../toolRegistry.js";
 
 export interface SessionParameters {
 	model: string;
@@ -25,7 +25,7 @@ export class SessionController {
 	public createSession(key: string, params: SessionParameters) {
 		if (this.sessions.get(key)) throw new Error(`Session '${key}' already exists!`);
 
-		const session = new Session(params, this.toolRegistry);
+		const session = new Session(params, this.toolRegistry, this);
 		this.sessions.set(key, session);
 		return session;
 	}
@@ -37,7 +37,7 @@ export class SessionController {
 	}
 
 	public async runTemporaryAgent(prompt: string, params: SessionParameters) {
-		const session = new Session(params, this.toolRegistry);
+		const session = new Session(params, this.toolRegistry, this);
 		const stream = await session.stream(prompt);
 
 		return stream.text;

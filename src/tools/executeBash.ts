@@ -10,7 +10,7 @@ export const Tool_ExecuteBash = tool({
 		timeout: z.number().default(10).describe("timeout, defaults to 10"),
 	}),
 
-	needsApproval: false, // will be changed later
+	needsApproval: true,
 	execute: async ({ cmd, timeout }) => {
 		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
 			console.log();

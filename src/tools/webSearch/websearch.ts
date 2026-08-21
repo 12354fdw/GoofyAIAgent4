@@ -1,8 +1,8 @@
 import { tool } from "ai";
 import z from "zod";
-import { SessionController } from "../../server/session/sessionController.js";
 import { webSearch } from "./common.js";
 import { ToolRegistry } from "../../server/toolRegistry.js";
+import { SessionController } from "../../server/agent/session/sessionController.js";
 
 export const Tool_WebSearch = tool({
 	description: "searches the web, but it's summarized by an agent",

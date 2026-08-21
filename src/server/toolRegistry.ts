@@ -25,6 +25,10 @@ export class ToolRegistry {
 		return Object.fromEntries(tools);
 	}
 
+	public getToolsMap() {
+		return this.tools;
+	}
+
 	private registerBuiltinTools() {
 		this.register("get_time", Tool_GetTime);
 		this.register("execute_bash", Tool_ExecuteBash);
