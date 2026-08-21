@@ -16,7 +16,7 @@ export const Tool_WebSearch = tool({
 		if (results.length === 0) return `No search results found for query: ${query}`;
 
 		return await SessionController.getInstance().runTemporaryAgent(JSON.stringify(results, null, 2), {
-			model: "inclusionai/ling-3.0-flash",
+			model: "deepseek/deepseek-v4-flash-0731",
 			instruction: "SYSTEM/WEBSUMMARY.md",
 			toolBlacklist: Object.values(ToolRegistry.getInstance().getTools()),
 		});

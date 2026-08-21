@@ -14,7 +14,7 @@ export class SessionController {
 	private sessions = new Map<string, Session>();
 
 	private constructor(private toolRegistry: ToolRegistry) {
-		this.createSession("default-session", { model: "inclusionai/ling-3.0-flash" });
+		this.createSession("default-session", { model: "deepseek/deepseek-v4-flash-0731" });
 	}
 
 	public static getInstance() {

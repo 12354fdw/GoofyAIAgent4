@@ -10,6 +10,7 @@ async function runAgent(prompt: string) {
 	const stream = await session.stream(prompt);
 
 	for await (const tok of stream.textStream) {
+		
 		process.stdout.write(tok);
 	}
 	process.stdout.write("\n----------------------------\n");

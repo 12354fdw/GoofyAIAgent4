@@ -22,6 +22,11 @@ export class StreamController {
 			onError: (e: { error: Error }) => {
 				throw e.error;
 			},
+			onStepFinish: (step: any) => {
+				if (step.toolCalls && step.toolCalls.length > 0) {
+					process.stdout.write("\n\n\x1b[35m=== [TOOL CALL COMPLETED - NEXT ITERATION] ===\x1b[0m\n\n");
+				}
+			},
 		} as never);
 	}
 
