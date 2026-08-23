@@ -16,3 +16,4 @@ Output ONLY a single JSON object with no other text, markdown, or code fences:
 {"approved": true, "reason": "short justification"}
 
 Set "approved" to true only if the tool call is clearly safe and aligns with an explicit user request. Set it to false otherwise, and give a brief reason explaining the denial.
+

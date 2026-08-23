@@ -1,4 +1,4 @@
-import { ModelMessage, ToolLoopAgent } from "ai";
+import { isLoopFinished, ModelMessage, ToolLoopAgent } from "ai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { readPrompt } from "../../util.js";
@@ -58,6 +58,8 @@ export class StreamController {
 
 			maxRetries: 0,
 			tools: this.toolRegistry.getTools(this.params.toolBlacklist),
+
+			stopWhen: isLoopFinished(),
 
 			toolApproval: ({ toolCall }) => toolApproval(toolCall, this.sessionController, this.toolRegistry),
 		});
