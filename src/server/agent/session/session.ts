@@ -1,5 +1,6 @@
 import { ModelMessage } from "ai";
 import { StreamController } from "./streamController.js";
+import { StreamTypes } from "./streamTypes.js";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { ToolRegistry } from "../../toolRegistry.js";
 
@@ -23,17 +24,17 @@ export class Session {
 		this.streamController = new StreamController(this.params, toolRegistry, sessionController);
 	}
 
-	public async stream(prompt: string) {
+	public async *stream(prompt: string): AsyncGenerator<StreamTypes> {
 		this.messages.push({
 			role: "user",
 			content: prompt,
 		});
 
-		const stream = await this.streamController.stream(this.messages);
-		stream.responseMessages.then((msgs) => {
-			this.messages.push(...msgs);
-		});
+		for await (const part of this.streamController.stream(this.messages)) {
+			yield part;
+		}
 
-		return stream;
+		const responseMessages = await this.streamController.getResponseMessages();
+		if (responseMessages) this.messages.push(...responseMessages);
 	}
 }

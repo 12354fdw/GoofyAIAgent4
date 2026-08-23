@@ -1,12 +1,14 @@
-import { GenerateTextStepEndEvent, ModelMessage, ToolLoopAgent } from "ai";
+import { ModelMessage, ToolLoopAgent } from "ai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../toolRegistry.js";
 import { toolApproval } from "../security.js";
+import { StreamTypes } from "./streamTypes.js";
 
 export class StreamController {
 	private agent!: ToolLoopAgent;
+	private streamResult?: Awaited<ReturnType<ToolLoopAgent["stream"]>>;
 
 	constructor(
 		private params: SessionParameters,
@@ -16,18 +18,35 @@ export class StreamController {
 		this.createAgent();
 	}
 
-	public async stream(messages: ModelMessage[]) {
+	public async *stream(messages: ModelMessage[]): AsyncGenerator<StreamTypes> {
 		this.createAgent();
-		return await this.agent.stream({
+		const result = await this.agent.stream({
 			messages,
-			onError: (e: { error: Error }) => {
-				throw e.error;
-			},
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-object-type
-			onStepEnd: (event: GenerateTextStepEndEvent<{}>) => {
-				console.log("\n--[STEP END]--\n");
-			},
 		} as never);
+		this.streamResult = result;
+
+		for await (const part of result.fullStream) {
+			switch (part.type) {
+				case "text-delta":
+					yield { type: "token", content: part.text };
+					break;
+				case "tool-call":
+					yield { type: "tool_start", name: part.toolName, id: part.toolCallId };
+					break;
+				case "tool-result":
+					yield { type: "tool_end", name: part.toolName, id: part.toolCallId };
+					break;
+				case "finish-step":
+					yield { type: "step_end" };
+					break;
+				case "error":
+					throw part.error;
+			}
+		}
+	}
+
+	public async getResponseMessages() {
+		return await this.streamResult?.responseMessages;
 	}
 
 	//

@@ -7,10 +7,8 @@ const controller = SessionController.getInstance();
 const session = controller.getSession("default-session");
 
 async function runAgent(prompt: string) {
-	const stream = await session.stream(prompt);
-
-	for await (const tok of stream.textStream) {
-		process.stdout.write(tok);
+	for await (const part of session.stream(prompt)) {
+		if (part.type === "token") process.stdout.write(part.content);
 	}
 	process.stdout.write("\n----------------------------\n");
 }

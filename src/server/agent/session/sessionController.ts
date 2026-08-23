@@ -38,8 +38,12 @@ export class SessionController {
 
 	public async runTemporaryAgent(prompt: string, params: SessionParameters) {
 		const session = new Session(params, this.toolRegistry, this);
-		const stream = await session.stream(prompt);
 
-		return stream.text;
+		let text = "";
+		for await (const part of session.stream(prompt)) {
+			if (part.type === "token") text += part.content;
+		}
+
+		return text;
 	}
 }
