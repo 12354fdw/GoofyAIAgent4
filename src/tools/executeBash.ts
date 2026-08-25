@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import { exec } from "node:child_process";
 import z from "zod";
-import { LOGGER } from "../server/slogger.js";
+import { LOGGER } from "../server/logger.js";
 
 export const Tool_ExecuteBash = tool({
 	description: "executes bash on the host computer, do not use interactive commands (including sudo)",

@@ -15,4 +15,7 @@ export type StreamTypes =
 			type: "tool_end";
 			name: string;
 			id: string;
+	  }
+	| {
+			type: "finished";
 	  };

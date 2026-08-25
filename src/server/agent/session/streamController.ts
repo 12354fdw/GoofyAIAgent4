@@ -39,6 +39,9 @@ export class StreamController {
 				case "finish-step":
 					yield { type: "step_end" };
 					break;
+				case "finish":
+					yield { type: "finished" };
+					break;
 				case "error":
 					throw part.error;
 			}

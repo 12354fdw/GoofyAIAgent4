@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { LOGGER } from "../slogger.js";
+import { LOGGER } from "../logger.js";
 import { expose } from "comlink";
 import { ComlinkServerAPI } from "./comlinkServerAPI.js";
 import { createEndpoint } from "../../shared/createEndpoint.js";
@@ -13,6 +13,13 @@ export function handleConnection(ws: WebSocket) {
 				LOGGER.info("Client connected! Comlink mode");
 				const endpoint = createEndpoint(ws);
 				expose(ComlinkServerAPI.getInstance(), endpoint);
+				break;
+			}
+
+			case "stream_mode": {
+				LOGGER.info("Client connected! Streaming mode");
+				ComlinkServerAPI.getInstance().registerStreamingSocket(data.id, ws);
+				break;
 			}
 		}
 	});

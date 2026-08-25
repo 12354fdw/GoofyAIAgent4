@@ -5,7 +5,7 @@ import { createEndpoint } from "../../shared/createEndpoint.js";
 
 export class ComliinkClientNetworking {
 	private readonly socket;
-	private readonly remote: Remote<ComlinkServerAPI>;
+	public readonly remote: Remote<ComlinkServerAPI>;
 
 	constructor(private port: number) {
 		this.socket = new WebSocket(`ws://localhost:${port}`);
@@ -15,5 +15,24 @@ export class ComliinkClientNetworking {
 		});
 
 		this.remote = wrap<ComlinkServerAPI>(createEndpoint(this.socket));
+	}
+
+	public async createStreamingSocket(id: string): Promise<WebSocket> {
+		const socket = new WebSocket(`ws://localhost:${this.port}`);
+
+		await new Promise<void>((resolve, reject) => {
+			socket.once("open", () => {
+				socket.send(
+					JSON.stringify({
+						mode: "stream_mode",
+						id,
+					}),
+				);
+				resolve();
+			});
+			socket.once("error", reject);
+		});
+
+		return socket;
 	}
 }
