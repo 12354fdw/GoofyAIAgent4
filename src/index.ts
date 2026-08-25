@@ -1,7 +1,5 @@
 import { ENTRY_server } from "./server/index.js";
-import { ENTRY_CLIENT } from "./cli/index.js";
-import { LOGGER } from "./server/slogger.js";
+// import { ENTRY_CLIENT } from "./client/index.js";
 
 ENTRY_server();
-LOGGER.trace("starting client");
-ENTRY_CLIENT();
+// ENTRY_CLIENT();

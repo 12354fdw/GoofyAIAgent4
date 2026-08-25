@@ -20,6 +20,7 @@ export function ENTRY_server() {
 	const wss = new WebSocketServer({ port: PORT });
 
 	wss.on("connection", (ws: WebSocket) => {
+		ws.on("message", ())
 		const endpoint = createEndpoint(ws);
 
 		expose(new ComlinkServerAPI(), endpoint);
