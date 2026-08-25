@@ -1,4 +1,10 @@
+import { WebSocket, WebSocketServer } from "ws";
 import { LOGGER } from "./slogger.js";
+import { createEndpoint } from "../shared/createEndpoint.js";
+import { expose } from "comlink";
+import { ComlinkServerAPI } from "./networking/comlinkServerAPI.js";
+
+const PORT = 4613;
 
 export function ENTRY_server() {
 	process.on("uncaughtException", (error: Error) => {
@@ -10,4 +16,14 @@ export function ENTRY_server() {
 		LOGGER.fatal("Unhandled Rejection!", error);
 		process.exit(1);
 	});
+
+	const wss = new WebSocketServer({ port: PORT });
+
+	wss.on("connection", (ws: WebSocket) => {
+		const endpoint = createEndpoint(ws);
+
+		expose(new ComlinkServerAPI(), endpoint);
+	});
+
+	LOGGER.info(`Server running on port ${PORT}`);
 }
