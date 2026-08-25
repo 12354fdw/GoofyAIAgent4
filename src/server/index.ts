@@ -1,8 +1,6 @@
-import { WebSocket, WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 import { LOGGER } from "./slogger.js";
-import { createEndpoint } from "../shared/createEndpoint.js";
-import { expose } from "comlink";
-import { ComlinkServerAPI } from "./networking/comlinkServerAPI.js";
+import { handleConnection } from "./networking/handleConnection.js";
 
 const PORT = 4613;
 
@@ -19,19 +17,7 @@ export function ENTRY_server() {
 
 	const wss = new WebSocketServer({ port: PORT });
 
-	wss.on("connection", (ws: WebSocket) => {
-		ws.once("message", (raw) => {
-			const data = JSON.parse(raw.toString());
-
-			switch (data.mode) {
-				case "comlink_mode": {
-					LOGGER.info("Client connected! Comlink mode");
-					const endpoint = createEndpoint(ws);
-					expose(ComlinkServerAPI.getInstance(), endpoint);
-				}
-			}
-		});
-	});
+	wss.on("connection", handleConnection);
 
 	LOGGER.info(`Server running on port ${PORT}`);
 }
