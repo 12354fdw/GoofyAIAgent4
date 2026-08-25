@@ -2,7 +2,7 @@ import { ModelMessage } from "ai";
 import { StreamController } from "./streamController.js";
 import { StreamTypes } from "./streamTypes.js";
 import { SessionController, SessionParameters } from "./sessionController.js";
-import { ToolRegistry } from "../../toolRegistry.js";
+import { ToolRegistry } from "../../tool/toolRegistry.js";
 
 export class Session {
 	private streamController: StreamController;

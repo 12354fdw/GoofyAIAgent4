@@ -1,5 +1,5 @@
 import { Tool, TypedToolCall } from "ai";
-import { ToolRegistry } from "../toolRegistry.js";
+import { ToolRegistry } from "../tool/toolRegistry.js";
 import { SessionController } from "./session/sessionController.js";
 
 export async function toolApproval(

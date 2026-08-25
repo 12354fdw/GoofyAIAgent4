@@ -1,7 +1,7 @@
 import { Tool } from "ai";
 import { Session } from "./session.js";
 import { InstructionPaths } from "../../util.js";
-import { ToolRegistry } from "../../toolRegistry.js";
+import { ToolRegistry } from "../../tool/toolRegistry.js";
 
 export interface SessionParameters {
 	model: string;

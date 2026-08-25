@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import { exec } from "node:child_process";
 import z from "zod";
-import { SLOGGER } from "../server/slogger.js";
+import { LOGGER } from "../server/slogger.js";
 
 export const Tool_ExecuteBash = tool({
 	description: "executes bash on the host computer, do not use interactive commands (including sudo)",
@@ -14,7 +14,7 @@ export const Tool_ExecuteBash = tool({
 	execute: async ({ cmd, timeout }) => {
 		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
 			console.log();
-			SLOGGER.warn(`executing bash '${cmd}' with timeout ${timeout}s`);
+			LOGGER.warn(`executing bash '${cmd}' with timeout ${timeout}s`);
 			exec(cmd, { timeout: timeout * 1000 }, (error, stdout, stderr) => {
 				if (error && error.killed) {
 					resolve({

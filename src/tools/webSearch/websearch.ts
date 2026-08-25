@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import z from "zod";
 import { webSearch } from "./common.js";
-import { ToolRegistry } from "../../server/toolRegistry.js";
+import { ToolRegistry } from "../../server/tool/toolRegistry.js";
 import { SessionController } from "../../server/agent/session/sessionController.js";
 
 export const Tool_WebSearch = tool({

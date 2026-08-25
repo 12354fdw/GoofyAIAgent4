@@ -2,7 +2,7 @@ import { isLoopFinished, ModelMessage, ToolLoopAgent } from "ai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { readPrompt } from "../../util.js";
-import { ToolRegistry } from "../../toolRegistry.js";
+import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { toolApproval } from "../security.js";
 import { StreamTypes } from "./streamTypes.js";
 
