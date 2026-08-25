@@ -3,6 +3,8 @@
 // 	process.stdout.write("\n----------------------------\n");
 // }
 
-// export async function ENTRY_CLIENT() {
-// 	await runAgent(readFileSync("prompt.txt", "utf-8"));
-// }
+import { ComliinkClientNetworking } from "./networking/comlinkClientNetworking.js";
+
+export async function ENTRY_CLIENT() {
+	new ComliinkClientNetworking(4613);
+}

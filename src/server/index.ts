@@ -20,10 +20,17 @@ export function ENTRY_server() {
 	const wss = new WebSocketServer({ port: PORT });
 
 	wss.on("connection", (ws: WebSocket) => {
-		ws.on("message", ())
-		const endpoint = createEndpoint(ws);
+		ws.once("message", (raw) => {
+			const data = JSON.parse(raw.toString());
 
-		expose(new ComlinkServerAPI(), endpoint);
+			switch (data.mode) {
+				case "comlink_mode": {
+					LOGGER.info("Client connected! Comlink mode");
+					const endpoint = createEndpoint(ws);
+					expose(ComlinkServerAPI.getInstance(), endpoint);
+				}
+			}
+		});
 	});
 
 	LOGGER.info(`Server running on port ${PORT}`);

@@ -10,7 +10,10 @@ export class ComliinkClientNetworking {
 	constructor(private port: number) {
 		this.socket = new WebSocket(`ws://localhost:${port}`);
 
-		this.socket.send("comlink_mode");
+		this.socket.once("open", () => {
+			this.socket.send(`{"mode":"comlink_mode"}`);
+		});
+
 		this.remote = wrap<ComlinkServerAPI>(createEndpoint(this.socket));
 	}
 }
