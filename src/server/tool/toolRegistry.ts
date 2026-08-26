@@ -1,6 +1,7 @@
 import { Tool } from "ai";
 import { Tool_GetTime } from "../../tools/getTime.js";
 import { Tool_ExecuteBash } from "../../tools/executeBash.js";
+import { Tool_SshBash } from "../../tools/sshBash.js";
 import { Tool_WebSearch } from "../../tools/webSearch/websearch.js";
 import { Tool_RawWebSearch } from "../../tools/webSearch/rawWebSearch.js";
 
@@ -32,6 +33,7 @@ export class ToolRegistry {
 	private registerBuiltinTools() {
 		this.register("get_time", Tool_GetTime);
 		this.register("execute_bash", Tool_ExecuteBash);
+		this.register("ssh_bash", Tool_SshBash);
 		this.register("web_search", Tool_WebSearch);
 		this.register("raw_web_search", Tool_RawWebSearch);
 	}

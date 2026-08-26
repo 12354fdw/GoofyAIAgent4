@@ -7,6 +7,8 @@ export async function toolApproval(
 	sessionController: SessionController,
 	toolRegistry: ToolRegistry,
 ): Promise<{ type: "approved" | "denied"; reason: string }> {
+	// return { type: "approved", reason: "bypass" };
+
 	const tool = toolRegistry.getToolsMap().get(toolCall.toolName);
 	if (tool && !tool.needsApproval) {
 		return { type: "approved", reason: "tool does not require approval" };
