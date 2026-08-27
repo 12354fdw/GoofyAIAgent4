@@ -18,11 +18,10 @@ export class ToolRegistry {
 		return ToolRegistry.instance;
 	}
 
-	public getTools(blacklist: Tool[] = []): { [k: string]: Tool } {
+	public getTools(blacklist: string[] = []): { [k: string]: Tool } {
 		const blacklistSet = new Set(blacklist);
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const tools = this.tools.entries().filter(([_, tool]) => !blacklistSet.has(tool));
+		const tools = this.tools.entries().filter(([key]) => !blacklistSet.has(key));
 		return Object.fromEntries(tools);
 	}
 

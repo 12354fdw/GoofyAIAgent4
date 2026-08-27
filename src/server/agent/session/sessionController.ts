@@ -1,12 +1,11 @@
-import { Tool } from "ai";
 import { Session } from "./session.js";
-import { InstructionPaths } from "../../util.js";
+import { InstructionInfo } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 
 export interface SessionParameters {
 	model: string;
-	instruction?: InstructionPaths;
-	toolBlacklist?: Tool[];
+	instruction?: InstructionInfo;
+	toolBlacklist?: string[];
 }
 
 export class SessionController {

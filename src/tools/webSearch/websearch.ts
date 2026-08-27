@@ -18,7 +18,7 @@ export const Tool_WebSearch = tool({
 		return await SessionController.getInstance().runTemporaryAgent(JSON.stringify(results, null, 2), {
 			model: "deepseek/deepseek-v4-flash-0731",
 			instruction: "SYSTEM/WEBSUMMARY.md",
-			toolBlacklist: Object.values(ToolRegistry.getInstance().getTools()),
+			toolBlacklist: Object.keys(ToolRegistry.getInstance().getTools()),
 		});
 	},
 });

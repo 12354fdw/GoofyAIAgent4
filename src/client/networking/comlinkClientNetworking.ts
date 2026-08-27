@@ -2,8 +2,11 @@ import { WebSocket } from "ws";
 import { Remote, wrap } from "comlink";
 import { ComlinkServerAPI } from "../../server/networking/comlinkServerAPI.js";
 import { createEndpoint } from "../../shared/createEndpoint.js";
+import { ReadyOrNot } from "../../shared/readyOrNot.js";
 
 export class ComliinkClientNetworking {
+	private readyOrNot = new ReadyOrNot();
+
 	private readonly socket;
 	public readonly remote: Remote<ComlinkServerAPI>;
 
@@ -12,9 +15,14 @@ export class ComliinkClientNetworking {
 
 		this.socket.once("open", () => {
 			this.socket.send(`{"mode":"comlink_mode"}`);
+			this.readyOrNot.ready();
 		});
 
 		this.remote = wrap<ComlinkServerAPI>(createEndpoint(this.socket));
+	}
+
+	public async awaitReady() {
+		return this.readyOrNot.awaitReady();
 	}
 
 	public async createStreamingSocket(id: string): Promise<WebSocket> {

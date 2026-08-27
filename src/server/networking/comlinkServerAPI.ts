@@ -1,4 +1,4 @@
-import { SessionController } from "../agent/session/sessionController.js";
+import { SessionController, SessionParameters } from "../agent/session/sessionController.js";
 import { WebSocket } from "ws";
 
 export class ComlinkServerAPI {
@@ -8,6 +8,8 @@ export class ComlinkServerAPI {
 		if (!ComlinkServerAPI.instance) ComlinkServerAPI.instance = new ComlinkServerAPI();
 		return ComlinkServerAPI.instance;
 	}
+
+	private controller = SessionController.getInstance();
 
 	// TODO: delegate this to somewhere else
 	private streamingSockets = new Map<string, WebSocket>();
@@ -32,11 +34,15 @@ export class ComlinkServerAPI {
 	}
 
 	public async startStreaming(streamID: string, sessionName: string, prompt: string) {
-		const stream = SessionController.getInstance().getSession(sessionName).stream(prompt);
+		const stream = this.controller.getSession(sessionName).stream(prompt);
 		const socket = await this.getStreamingSocket(streamID);
 
 		for await (const part of stream) {
 			socket.send(JSON.stringify(part));
 		}
+	}
+
+	public async createSession(sessionName: string, params: SessionParameters) {
+		this.controller.createSession(sessionName, params);
 	}
 }

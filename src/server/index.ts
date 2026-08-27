@@ -4,7 +4,7 @@ import { handleConnection } from "./networking/handleConnection.js";
 
 const PORT = 4613;
 
-export function ENTRY_server() {
+export function ENTRY_SERVER() {
 	process.on("uncaughtException", (error: Error) => {
 		LOGGER.fatal("Uncaught Exception!", error);
 		process.exit(1);

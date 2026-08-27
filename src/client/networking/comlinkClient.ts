@@ -1,3 +1,4 @@
+import { SessionParameters } from "../../server/agent/session/sessionController.js";
 import { StreamTypes } from "../../server/agent/session/streamTypes.js";
 import { ComliinkClientNetworking } from "./comlinkClientNetworking.js";
 
@@ -5,6 +6,10 @@ export class ComlinkClient {
 	private networking = new ComliinkClientNetworking(4613);
 
 	constructor() {}
+
+	public async awaitReady() {
+		return this.networking.awaitReady();
+	}
 
 	public async *stream(sessionName: string, prompt: string) {
 		const remote = this.networking.remote;
@@ -38,5 +43,9 @@ export class ComlinkClient {
 		}
 
 		socket.close();
+	}
+
+	public async createSession(sesionName: string, params: SessionParameters) {
+		await this.networking.remote.createSession(sesionName, params);
 	}
 }

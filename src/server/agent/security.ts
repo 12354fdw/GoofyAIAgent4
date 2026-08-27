@@ -24,7 +24,7 @@ export async function toolApproval(
 					model: "google/gemini-2.5-flash-lite",
 					instruction: "SYSTEM/SECURITY.md",
 					// block all tools
-					toolBlacklist: Object.values(toolRegistry.getTools()),
+					toolBlacklist: Object.keys(toolRegistry.getTools()),
 				},
 			),
 		);
