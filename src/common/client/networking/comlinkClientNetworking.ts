@@ -1,8 +1,8 @@
 import { WebSocket } from "ws";
 import { Remote, wrap } from "comlink";
-import { ComlinkServerAPI } from "../../server/networking/comlinkServerAPI.js";
-import { createEndpoint } from "../../shared/createEndpoint.js";
-import { ReadyOrNot } from "../../shared/readyOrNot.js";
+import { ComlinkServerAPI } from "../../../server/networking/comlinkServerAPI.js";
+import { createEndpoint } from "../../../shared/createEndpoint.js";
+import { ReadyOrNot } from "../../../shared/readyOrNot.js";
 
 export class ComliinkClientNetworking {
 	private readyOrNot = new ReadyOrNot();

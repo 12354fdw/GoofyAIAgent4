@@ -1,6 +1,6 @@
 import { LOGGER } from "../server/logger.js";
 import { ToolRegistry } from "../server/tool/toolRegistry.js";
-import { ComlinkClient } from "./networking/comlinkClient.js";
+import { ComlinkClient } from "../common/client/networking/comlinkClient.js";
 
 async function runAgent(client: ComlinkClient, prompt: string, session: string = "default-session") {
 	let text = "";

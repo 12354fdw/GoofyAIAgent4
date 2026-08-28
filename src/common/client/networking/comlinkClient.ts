@@ -1,5 +1,5 @@
-import { SessionParameters } from "../../server/agent/session/sessionController.js";
-import { StreamTypes } from "../../server/agent/session/streamTypes.js";
+import { SessionParameters } from "../../../server/agent/session/sessionController.js";
+import { StreamTypes } from "../../../server/agent/session/streamTypes.js";
 import { ComliinkClientNetworking } from "./comlinkClientNetworking.js";
 
 export class ComlinkClient {
