@@ -13,5 +13,10 @@ export type CheckpointTypes =
 	| {
 			type: "tool";
 			status: "pending" | "done" | "rejected";
+
+			toolName: string;
+			toolId: string;
+
 			result: string;
+			arguments: JSON;
 	  };

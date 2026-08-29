@@ -31,10 +31,15 @@ export class StreamController {
 					yield { type: "token", content: part.text };
 					break;
 				case "tool-call":
-					yield { type: "tool_start", name: part.toolName, id: part.toolCallId };
+					yield {
+						type: "tool_start",
+						name: part.toolName,
+						arguments: part.input as JSON,
+						id: part.toolCallId,
+					};
 					break;
 				case "tool-result":
-					yield { type: "tool_end", name: part.toolName, id: part.toolCallId };
+					yield { type: "tool_end", name: part.toolName, result: part.output as JSON, id: part.toolCallId };
 					break;
 				case "finish-step":
 					yield { type: "step_end" };

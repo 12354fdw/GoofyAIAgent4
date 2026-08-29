@@ -4,6 +4,7 @@ import { Box } from "ink";
 import { Prompt } from "./prompt.js";
 import { History } from "./history.js";
 import { ComlinkClient } from "../../common/client/networking/comlinkClient.js";
+import { JSONAttemptStringify } from "../../shared/jsonAttemptStringify.js";
 
 type AppProps = {
 	client: ComlinkClient;
@@ -26,13 +27,41 @@ export const App = ({ client }: AppProps) => {
 		});
 	};
 
+	const setToolCheckpoint = (id: string, updates: Partial<Extract<CheckpointTypes, { type: "tool" }>>) => {
+		setHistory((previous) =>
+			previous.map((checkpoint) =>
+				checkpoint.type === "tool" && checkpoint.toolId === id ? { ...checkpoint, ...updates } : checkpoint,
+			),
+		);
+	};
+
 	const generateOutput = async (prompt: string) => {
 		const stream = client.stream("default-session", prompt);
 
 		for await (const part of stream) {
-			if (part.type !== "token") continue;
+			switch (part.type) {
+				case "token":
+					setAssistantCheckpoint(part.content);
+					break;
 
-			setAssistantCheckpoint(part.content);
+				case "tool_start":
+					appendCheckpoint({
+						type: "tool",
+						status: "pending",
+						toolName: part.name,
+						toolId: part.id,
+						result: "",
+						arguments: part.arguments,
+					});
+					break;
+
+				case "tool_end":
+					setToolCheckpoint(part.id, {
+						status: "done",
+						result: JSONAttemptStringify(part.result),
+					});
+					break;
+			}
 		}
 	};
 

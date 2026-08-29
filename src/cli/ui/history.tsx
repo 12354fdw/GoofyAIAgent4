@@ -1,5 +1,29 @@
 import { Box, Text } from "ink";
 import { CheckpointTypes } from "../../shared/checkpointTypes.js";
+import { truncate } from "../../shared/truncate.js";
+import { LiteralUnion } from "type-fest";
+import { ForegroundColorName } from "chalk";
+import { JSONAttemptStringify } from "../../shared/jsonAttemptStringify.js";
+
+function toolEntryFactory(
+	index: number,
+	checkpoint: Extract<CheckpointTypes, { type: "tool" }>,
+	color: LiteralUnion<ForegroundColorName, string>,
+) {
+	return (
+		<Box key={index} marginTop={1}>
+			<Text color={color}>⬤ </Text>
+			<Text>
+				{checkpoint.toolName}({truncate(JSON.stringify(checkpoint.arguments), 50)})
+			</Text>
+			<Text>
+				{checkpoint.status !== "pending"
+					? `\n\r  ╰─── ${truncate(JSONAttemptStringify(checkpoint.result), 50)}`
+					: ""}
+			</Text>
+		</Box>
+	);
+}
 
 type HistoryProps = {
 	history: CheckpointTypes[];
@@ -26,6 +50,19 @@ export const History = ({ history }: HistoryProps) => {
 								<Text>⬤ {checkpoint.content}</Text>
 							</Box>
 						);
+					}
+
+					case "tool": {
+						switch (checkpoint.status) {
+							case "pending":
+								return toolEntryFactory(index, checkpoint, "gray");
+
+							case "done":
+								return toolEntryFactory(index, checkpoint, "green");
+
+							case "rejected":
+								return toolEntryFactory(index, checkpoint, "red");
+						}
 					}
 				}
 			})}
