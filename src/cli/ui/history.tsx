@@ -1,4 +1,5 @@
 import { Box, Text } from "ink";
+import { Markdown } from "./markdown.js";
 import { CheckpointTypes } from "../../shared/checkpointTypes.js";
 import { truncate } from "../../shared/truncate.js";
 import { LiteralUnion } from "type-fest";
@@ -47,7 +48,8 @@ export const History = ({ history }: HistoryProps) => {
 					case "assistant": {
 						return (
 							<Box key={index} marginTop={1}>
-								<Text>⬤ {checkpoint.content}</Text>
+								<Text>▲ </Text>
+								<Markdown>{checkpoint.content}</Markdown>
 							</Box>
 						);
 					}
