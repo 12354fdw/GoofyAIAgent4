@@ -27,7 +27,7 @@ export const Tool_ExecuteBash = tool({
 				resolve({
 					stdout,
 					stderr,
-					exitCode: typeof error?.code === "number" ? error.code : 1,
+					exitCode: error ? (typeof error.code === "number" ? error.code : 1) : 0,
 				});
 			});
 		});
