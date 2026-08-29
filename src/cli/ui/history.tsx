@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 import { CheckpointTypes } from "../../shared/checkpointTypes.js";
 import { truncate } from "../../shared/truncate.js";
+import { Divider } from "./divider.js";
 import { LiteralUnion } from "type-fest";
 import { ForegroundColorName } from "chalk";
 import { JSONAttemptStringify } from "../../shared/jsonAttemptStringify.js";
@@ -63,6 +64,14 @@ export const History = ({ history }: HistoryProps) => {
 							case "rejected":
 								return toolEntryFactory(index, checkpoint, "red");
 						}
+					}
+
+					case "step_end": {
+						return (
+							<Box key={index} flexDirection="column" marginTop={1}>
+								<Divider dividerChar="┈" title="STEP ENDED" />
+							</Box>
+						);
 					}
 				}
 			})}

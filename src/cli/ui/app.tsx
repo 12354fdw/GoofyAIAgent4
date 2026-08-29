@@ -61,6 +61,10 @@ export const App = ({ client }: AppProps) => {
 						result: JSONAttemptStringify(part.result),
 					});
 					break;
+
+				case "step_end":
+					appendCheckpoint({ type: "step_end" });
+					break;
 			}
 		}
 	};
