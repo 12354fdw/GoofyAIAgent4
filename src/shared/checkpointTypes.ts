@@ -5,6 +5,7 @@ export type CheckpointTypes =
 	  }
 	| {
 			type: "assistant";
+			content: string;
 	  }
 	| {
 			type: "step_end";

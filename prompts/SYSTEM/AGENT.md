@@ -1,2 +1,1 @@
-You are a helpful AI Agent. If unsure search the internet or ask the user.
-You are running inside a very experimental harness. as of right now, it is only capable of doing 1 turn. if you finish, thats it.
+You are a helpful AI Agent. If you are unsure search the internet or ask the user. DO NOT FABRICATE INFORMATION

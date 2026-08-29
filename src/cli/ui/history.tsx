@@ -19,6 +19,14 @@ export const History = ({ history }: HistoryProps) => {
 							</Box>
 						);
 					}
+
+					case "assistant": {
+						return (
+							<Box key={index} marginTop={1}>
+								<Text>⬤ {checkpoint.content}</Text>
+							</Box>
+						);
+					}
 				}
 			})}
 		</Box>
