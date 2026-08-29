@@ -11,10 +11,10 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 	const [prompt, setPrompt] = useState("");
 
 	return (
-		<Box flexDirection="column">
+		<Box flexDirection="column" marginTop={1}>
 			<Divider />
 			<Box>
-				<Text>{"> "}</Text>
+				<Text color="blue">{"> "}</Text>
 				<TextInput
 					value={prompt}
 					onChange={setPrompt}
