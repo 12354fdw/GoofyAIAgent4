@@ -1,4 +1,4 @@
-import { CheckpointEntryTypes, CheckpointTypes } from "./checkpointTypes.js";
+import { CheckpointEntryTypes } from "./checkpointTypes.js";
 
 type BasePacket = {
 	order: number;
@@ -12,7 +12,6 @@ export type NetworkedCheckpointDeltas =
 	  })
 	| {
 			type: "entry_addition";
-			role: CheckpointTypes;
 			content: CheckpointEntryTypes;
 	  }
 	| {

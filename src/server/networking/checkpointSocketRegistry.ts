@@ -58,4 +58,8 @@ export class SessionWebsocketRegistry {
 	public getSockets(session: string): Set<WebSocket> {
 		return this.sessions.get(session) ?? new Set();
 	}
+
+	public broadcast(session: string, cb: (ws: WebSocket) => void) {
+		this.getSockets(session).forEach(cb);
+	}
 }
