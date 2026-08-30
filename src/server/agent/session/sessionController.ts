@@ -1,4 +1,4 @@
-import { Session } from "./session.js";
+import { Agent } from "./agent.js";
 import { InstructionInfo } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 
@@ -10,7 +10,7 @@ export interface SessionParameters {
 
 export class SessionController {
 	private static instance: SessionController;
-	private sessions = new Map<string, Session>();
+	private sessions = new Map<string, Agent>();
 
 	private constructor(private toolRegistry: ToolRegistry) {
 		this.createSession("default-session", { model: "deepseek/deepseek-v4-flash-0731" });
@@ -24,7 +24,7 @@ export class SessionController {
 	public createSession(key: string, params: SessionParameters) {
 		if (this.sessions.get(key)) throw new Error(`Session '${key}' already exists!`);
 
-		const session = new Session(params, this.toolRegistry, this);
+		const session = new Agent(params, this.toolRegistry, this);
 		this.sessions.set(key, session);
 		return session;
 	}
@@ -36,7 +36,7 @@ export class SessionController {
 	}
 
 	public async runTemporaryAgent(prompt: string, params: SessionParameters) {
-		const session = new Session(params, this.toolRegistry, this);
+		const session = new Agent(params, this.toolRegistry, this);
 
 		let text = "";
 		for await (const part of session.stream(prompt)) {

@@ -4,7 +4,7 @@ import { StreamTypes } from "./streamTypes.js";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 
-export class Session {
+export class Agent {
 	private streamController: StreamController;
 	private messages: ModelMessage[] = [];
 

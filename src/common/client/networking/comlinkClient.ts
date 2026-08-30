@@ -30,7 +30,7 @@ export class ComlinkClient {
 			notifyNewData();
 		});
 
-		remote.startStreaming(id, sessionName, prompt);
+		remote.processUserRequest(id, sessionName, prompt);
 
 		while (!isDone || queue.length > 0) {
 			if (queue.length === 0) {

@@ -1,5 +1,5 @@
 import { SessionController, SessionParameters } from "../agent/session/sessionController.js";
-import { StreamingSocketRegistry } from "./streamingSocketRegistry.js";
+import { SessionWebsocketRegistry } from "./checkpointSocketRegistry.js";
 
 export class ComlinkServerAPI {
 	private static instance: ComlinkServerAPI;
@@ -10,15 +10,10 @@ export class ComlinkServerAPI {
 	}
 
 	private controller = SessionController.getInstance();
-	private streamingWebsocketRegistry = StreamingSocketRegistry.getInstance();
+	private sessionWebsocketRegistry = SessionWebsocketRegistry.getInstance();
 
-	public async startStreaming(streamID: string, sessionName: string, prompt: string) {
+	public async processUserRequest(streamID: string, sessionName: string, prompt: string) {
 		const stream = this.controller.getSession(sessionName).stream(prompt);
-		const socket = await this.streamingWebsocketRegistry.getStreamingSocket(streamID);
-
-		for await (const part of stream) {
-			socket.send(JSON.stringify(part));
-		}
 	}
 
 	public async createSession(sessionName: string, params: SessionParameters) {
