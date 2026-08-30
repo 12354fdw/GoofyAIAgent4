@@ -3,6 +3,7 @@ import { LOGGER } from "../logger.js";
 import { expose } from "comlink";
 import { ComlinkServerAPI } from "./comlinkServerAPI.js";
 import { createEndpoint } from "../../shared/createEndpoint.js";
+import { StreamingSocketRegistry } from "./streamingSocketRegistry.js";
 
 export function handleConnection(ws: WebSocket) {
 	ws.once("message", (raw) => {
@@ -18,7 +19,7 @@ export function handleConnection(ws: WebSocket) {
 
 			case "stream_mode": {
 				LOGGER.info("Client connected! Streaming mode");
-				ComlinkServerAPI.getInstance().registerStreamingSocket(data.id, ws);
+				StreamingSocketRegistry.getInstance().registerStreamingSocket(data.id, ws);
 				break;
 			}
 		}
