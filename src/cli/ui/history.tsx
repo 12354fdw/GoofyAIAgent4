@@ -1,6 +1,6 @@
 import { Box, Text } from "ink";
 import { Markdown } from "./markdown.js";
-import { CheckpointTypes } from "../../shared/checkpointTypes.js";
+import { CheckpointTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { truncate } from "../../shared/truncate.js";
 import { LiteralUnion } from "type-fest";
 import { ForegroundColorName } from "chalk";

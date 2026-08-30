@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckpointTypes } from "../../shared/checkpointTypes.js";
+import { CheckpointTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { Box } from "ink";
 import { Prompt } from "./prompt.js";
 import { History } from "./history.js";
