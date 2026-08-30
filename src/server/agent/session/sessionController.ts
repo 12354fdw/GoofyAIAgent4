@@ -21,11 +21,11 @@ export class SessionController {
 		return SessionController.instance;
 	}
 
-	public createSession(key: string, params: SessionParameters) {
-		if (this.sessions.get(key)) throw new Error(`Session '${key}' already exists!`);
+	public createSession(sessionName: string, params: SessionParameters) {
+		if (this.sessions.get(sessionName)) throw new Error(`Session '${sessionName}' already exists!`);
 
-		const session = new Session(params, this.toolRegistry, this);
-		this.sessions.set(key, session);
+		const session = new Session(sessionName, params, this.toolRegistry, this);
+		this.sessions.set(sessionName, session);
 		return session;
 	}
 
@@ -36,7 +36,7 @@ export class SessionController {
 	}
 
 	public async runTemporaryAgent(prompt: string, params: SessionParameters) {
-		const session = new Session(params, this.toolRegistry, this);
+		const session = new Session("tmp-agent", params, this.toolRegistry, this);
 
 		let text = "";
 		for await (const part of session.streamRaw(prompt)) {

@@ -4,12 +4,12 @@ type BasePacket = {
 	order: number;
 };
 
-export type NetworkedCheckpointDeltas =
-	| (BasePacket & {
+export type NetworkedCheckpointDeltaData =
+	| {
 			type: "entry_text_content_addition";
 			index: number;
-			content: string;
-	  })
+			delta: string;
+	  }
 	| {
 			type: "entry_addition";
 			content: CheckpointEntryTypes;
@@ -19,3 +19,5 @@ export type NetworkedCheckpointDeltas =
 			index: number;
 			content: CheckpointEntryTypes;
 	  };
+
+export type NetworkedCheckpointDeltas = NetworkedCheckpointDeltaData & BasePacket;
