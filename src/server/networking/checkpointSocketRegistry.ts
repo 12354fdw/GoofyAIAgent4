@@ -1,5 +1,8 @@
 import { WebSocket } from "ws";
-import { NetworkedCheckpointDeltaData, NetworkedCheckpointDeltas } from "../../shared/checkpoints/networkedCheckpoints.js";
+import {
+	NetworkedCheckpointDeltaData,
+	NetworkedCheckpointDeltas,
+} from "../../shared/checkpoints/networkedCheckpoints.js";
 
 export class SessionWebsocketRegistry {
 	private static instance: SessionWebsocketRegistry;
@@ -10,8 +13,8 @@ export class SessionWebsocketRegistry {
 	}
 
 	private sessions = new Map<string, Set<WebSocket>>();
+	private socketOrder = new Map<WebSocket, number>();
 	private socketToSession = new Map<WebSocket, string>();
-	private orderCounter = 0;
 
 	public registerSocket(socket: WebSocket, session: string = "default-session") {
 		if (this.socketToSession.has(socket)) {
@@ -24,6 +27,7 @@ export class SessionWebsocketRegistry {
 		}
 
 		this.sessions.get(session)!.add(socket);
+		this.socketOrder.set(socket, 0);
 		this.socketToSession.set(socket, session);
 		socket.once("close", () => this.unregisterSocket(socket));
 	}
@@ -55,6 +59,8 @@ export class SessionWebsocketRegistry {
 			this.sessions.delete(session);
 		}
 		this.socketToSession.delete(socket);
+
+		this.socketOrder.delete(socket);
 	}
 
 	public getSockets(session: string): Set<WebSocket> {
@@ -62,8 +68,11 @@ export class SessionWebsocketRegistry {
 	}
 
 	public broadcast(session: string, data: NetworkedCheckpointDeltaData) {
-		const packet: NetworkedCheckpointDeltas = { ...data, order: this.orderCounter++ };
 		this.getSockets(session).forEach((ws) => {
+			const order = this.socketOrder.get(ws)! + 1;
+			this.socketOrder.set(ws, order);
+
+			const packet: NetworkedCheckpointDeltas = { ...data, order };
 			ws.send(JSON.stringify(packet));
 		});
 	}

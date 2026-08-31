@@ -50,7 +50,7 @@ export class Session {
 		for await (const part of stream) {
 			switch (part.type) {
 				case "token": {
-					
+					this.appendTextContentCheckpoint(registry, this.history.length, part.content);
 				}
 			}
 		}

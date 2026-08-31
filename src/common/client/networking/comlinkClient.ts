@@ -11,11 +11,11 @@ export class ComlinkClient {
 		return this.networking.awaitReady();
 	}
 
-	public async *stream(sessionName: string, prompt: string) {
+	public async *processUserRequest(sessionName: string, prompt: string) {
 		const remote = this.networking.remote;
 
 		const id = crypto.randomUUID();
-		const socket = await this.networking.createStreamingSocket(id);
+		const socket = await this.networking.createCheckpointSocket(id);
 
 		let notifyNewData: () => void = () => {};
 
