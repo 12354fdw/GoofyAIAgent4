@@ -34,7 +34,7 @@ export class Session {
 	private appendTextContentCheckpoint(registry: SessionWebsocketRegistry, index: number, delta: string) {
 		const item = this.history[index]!;
 		if (item.type !== "assistant" && item.type !== "user")
-			throw new Error(`Unexpected checkpoint type at index ${index}: ${item.type}`);
+			throw new Error(`Checkpoint type isn't text-based at index ${index}: ${item.type}`);
 		item!.content += delta;
 
 		registry.broadcast(this.sessionName, {
