@@ -47,10 +47,19 @@ export class Session {
 	public async streamCheckpointDeltas(registry: SessionWebsocketRegistry, prompt: string) {
 		const stream = this.agent.stream(prompt);
 
+		this.appendCheckpoint(registry, {
+			type: "user",
+			content: prompt,
+		});
+		this.appendCheckpoint(registry, {
+			type: "assistant",
+			content: "",
+		});
+
 		for await (const part of stream) {
 			switch (part.type) {
 				case "token": {
-					this.appendTextContentCheckpoint(registry, this.history.length, part.content);
+					this.appendTextContentCheckpoint(registry, this.history.length - 1, part.content);
 				}
 			}
 		}

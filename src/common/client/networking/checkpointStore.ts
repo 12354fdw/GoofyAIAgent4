@@ -36,7 +36,7 @@ export class CheckpointStore {
 			}
 		}
 
-		this.onChange(this.history);
+		this.onChange([...this.history]);
 		this.decodeDelta();
 	}
 }

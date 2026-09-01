@@ -69,11 +69,13 @@ export class SessionWebsocketRegistry {
 
 	public broadcast(session: string, data: NetworkedCheckpointDeltaData) {
 		this.getSockets(session).forEach((ws) => {
-			const order = this.socketOrder.get(ws)! + 1;
+			const order = this.socketOrder.get(ws)!;
 			this.socketOrder.set(ws, order);
 
 			const packet: NetworkedCheckpointDeltas = { ...data, order, sessionName: session };
 			ws.send(JSON.stringify(packet));
+
+			this.socketOrder.set(ws, order + 1);
 		});
 	}
 }
