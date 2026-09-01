@@ -72,7 +72,7 @@ export class SessionWebsocketRegistry {
 			const order = this.socketOrder.get(ws)! + 1;
 			this.socketOrder.set(ws, order);
 
-			const packet: NetworkedCheckpointDeltas = { ...data, order };
+			const packet: NetworkedCheckpointDeltas = { ...data, order, sessionName: session };
 			ws.send(JSON.stringify(packet));
 		});
 	}

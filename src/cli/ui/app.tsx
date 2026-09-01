@@ -36,7 +36,7 @@ export const App = ({ client }: AppProps) => {
 	};
 
 	const generateOutput = async (prompt: string) => {
-		const stream = client.processUserRequest("default-session", prompt);
+		const stream = client.sendUserPrompt("default-session", prompt);
 
 		for await (const part of stream) {
 			switch (part.type) {

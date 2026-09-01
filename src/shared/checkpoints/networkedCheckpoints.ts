@@ -2,6 +2,7 @@ import { CheckpointEntryTypes } from "./checkpointTypes.js";
 
 type BasePacket = {
 	order: number;
+	sessionName: string;
 };
 
 export type NetworkedCheckpointDeltaData =

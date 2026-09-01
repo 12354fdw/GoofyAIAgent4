@@ -11,7 +11,7 @@ export class ComlinkClient {
 		return this.networking.awaitReady();
 	}
 
-	public async *processUserRequest(sessionName: string, prompt: string) {
+	public async *sendUserPrompt(sessionName: string, prompt: string) {
 		const remote = this.networking.remote;
 
 		const id = crypto.randomUUID();
