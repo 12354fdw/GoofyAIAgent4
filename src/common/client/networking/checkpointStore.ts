@@ -26,12 +26,17 @@ export class CheckpointStore {
 			}
 
 			case "entry_text_content_addition": {
-				const entry = this.history[delta.index];
+				const entry = this.history.at(delta.index)!;
 				if (entry.type !== "assistant" && entry.type !== "user")
 					throw new Error(`Checkpoint type isn't text-based!`);
 
 				entry.content += delta.delta;
-				this.history[delta.index] = entry;
+				this.history.with(delta.index, entry);
+				break;
+			}
+
+			case "entry_modification": {
+				this.history = this.history.with(delta.index, delta.content);
 				break;
 			}
 		}

@@ -16,7 +16,7 @@ export type NetworkedCheckpointDeltaData =
 			content: CheckpointEntryTypes;
 	  }
 	| {
-			type: "tool_entry_modification";
+			type: "entry_modification";
 			index: number;
 			content: CheckpointEntryTypes;
 	  };
