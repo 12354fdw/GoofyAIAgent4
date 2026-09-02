@@ -1,7 +1,7 @@
-import { CheckpointEntryTypes } from "../../../shared/checkpoints/checkpointTypes.js";
-import { NetworkedCheckpointDeltas } from "../../../shared/checkpoints/networkedCheckpoints.js";
+import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
+import { NetworkedCheckpointDeltas } from "../../shared/checkpoints/networkedCheckpoints.js";
 
-export class CheckpointStore {
+export class ClientSession {
 	private history: CheckpointEntryTypes[] = [];
 	private deltas: NetworkedCheckpointDeltas[] = [];
 	private currentOrder: number = 0;
