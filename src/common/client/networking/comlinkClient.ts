@@ -1,10 +1,10 @@
 import { SessionParameters } from "../../../server/agent/session/sessionController.js";
-import { ClientSession } from "../clientSession.js";
+import { CheckpointStore } from "./checkpointStore.js";
 import { ComliinkClientNetworking } from "./comlinkClientNetworking.js";
 
 export class ComlinkClient {
 	public networking = new ComliinkClientNetworking(4613);
-	public checkpointStore = new ClientSession();
+	public checkpointStore = new CheckpointStore();
 
 	constructor() {}
 
