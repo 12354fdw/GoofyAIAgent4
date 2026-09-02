@@ -25,17 +25,12 @@ export class ComliinkClientNetworking {
 		return this.readyOrNot.awaitReady();
 	}
 
-	public async createStreamingSocket(id: string): Promise<WebSocket> {
+	public async createCheckpointSocket(): Promise<WebSocket> {
 		const socket = new WebSocket(`ws://localhost:${this.port}`);
 
 		await new Promise<void>((resolve, reject) => {
 			socket.once("open", () => {
-				socket.send(
-					JSON.stringify({
-						mode: "stream_mode",
-						id,
-					}),
-				);
+				socket.send(JSON.stringify({ mode: "session_stream_mode" }));
 				resolve();
 			});
 			socket.once("error", reject);

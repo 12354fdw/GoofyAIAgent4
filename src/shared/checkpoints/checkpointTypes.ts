@@ -1,4 +1,6 @@
-export type CheckpointTypes =
+export type CheckpointTypes = "user" | "assistant" | "step_end" | "tool";
+
+export type CheckpointEntryTypes =
 	| {
 			type: "user";
 			content: string;

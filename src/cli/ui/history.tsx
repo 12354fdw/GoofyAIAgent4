@@ -1,14 +1,14 @@
 import { Box, Text } from "ink";
 import { Markdown } from "./markdown.js";
-import { CheckpointTypes } from "../../shared/checkpointTypes.js";
 import { truncate } from "../../shared/truncate.js";
 import { LiteralUnion } from "type-fest";
 import { ForegroundColorName } from "chalk";
 import { JSONAttemptStringify } from "../../shared/jsonAttemptStringify.js";
+import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 
 function toolEntryFactory(
 	index: number,
-	checkpoint: Extract<CheckpointTypes, { type: "tool" }>,
+	checkpoint: Extract<CheckpointEntryTypes, { type: "tool" }>,
 	color: LiteralUnion<ForegroundColorName, string>,
 ) {
 	return (
@@ -27,13 +27,13 @@ function toolEntryFactory(
 }
 
 type HistoryProps = {
-	history: CheckpointTypes[];
+	history: CheckpointEntryTypes[];
 };
 
 export const History = ({ history }: HistoryProps) => {
 	return (
 		<Box flexDirection="column" marginTop={1}>
-			{history.map((checkpoint: CheckpointTypes, index: number) => {
+			{history.map((checkpoint: CheckpointEntryTypes, index: number) => {
 				switch (checkpoint.type) {
 					case "user": {
 						return (

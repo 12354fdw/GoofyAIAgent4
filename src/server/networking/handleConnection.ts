@@ -3,6 +3,7 @@ import { LOGGER } from "../logger.js";
 import { expose } from "comlink";
 import { ComlinkServerAPI } from "./comlinkServerAPI.js";
 import { createEndpoint } from "../../shared/createEndpoint.js";
+import { SessionWebsocketRegistry } from "./checkpointSocketRegistry.js";
 
 export function handleConnection(ws: WebSocket) {
 	ws.once("message", (raw) => {
@@ -16,9 +17,9 @@ export function handleConnection(ws: WebSocket) {
 				break;
 			}
 
-			case "stream_mode": {
-				LOGGER.info("Client connected! Streaming mode");
-				ComlinkServerAPI.getInstance().registerStreamingSocket(data.id, ws);
+			case "session_stream_mode": {
+				LOGGER.info("Client connected! Checkpoint mode");
+				SessionWebsocketRegistry.getInstance().registerSocket(ws);
 				break;
 			}
 		}
