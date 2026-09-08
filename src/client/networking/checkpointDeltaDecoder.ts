@@ -1,14 +1,22 @@
-import { CheckpointEntryTypes } from "../../../shared/checkpoints/checkpointTypes.js";
-import { NetworkedCheckpointDeltas } from "../../../shared/checkpoints/networkedCheckpoints.js";
+import WebSocket from "ws";
+import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
+import { NetworkedCheckpointDeltas } from "../../shared/checkpoints/networkedCheckpoints.js";
 
-export class CheckpointStore {
+export class CheckpointDeltaDecoder {
 	private history: CheckpointEntryTypes[] = [];
 	private deltas: NetworkedCheckpointDeltas[] = [];
 	private currentOrder: number = 0;
 
 	public onChange: (history: CheckpointEntryTypes[]) => void = () => {};
 
-	public handleDelta(delta: NetworkedCheckpointDeltas) {
+	constructor(ws: WebSocket) {
+		ws.on("message", (raw) => {
+			const delta = JSON.parse(raw.toString()) as NetworkedCheckpointDeltas;
+			this.handleDelta(delta);
+		});
+	}
+
+	private handleDelta(delta: NetworkedCheckpointDeltas) {
 		this.deltas.push(delta);
 		this.decodeDelta();
 	}

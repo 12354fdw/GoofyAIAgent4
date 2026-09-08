@@ -3,18 +3,18 @@ import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.j
 import { Box } from "ink";
 import { Prompt } from "./prompt.js";
 import { History } from "./history.js";
-import { ComlinkClient } from "../../common/client/networking/comlinkClient.js";
+import { Client } from "../../client/client.js";
 
 type AppProps = {
-	client: ComlinkClient;
+	client: Client;
 };
 
 export const App = ({ client }: AppProps) => {
 	const [history, setHistory] = useState<CheckpointEntryTypes[]>([]);
 
-	client.checkpointStore.onChange = (history: CheckpointEntryTypes[]) => {
+	client.setOnChange((history: CheckpointEntryTypes[]) => {
 		setHistory(history);
-	};
+	});
 
 	return (
 		<Box flexDirection="column">
@@ -22,7 +22,7 @@ export const App = ({ client }: AppProps) => {
 
 			<Prompt
 				onSubmit={(prompt: string) => {
-					client.sendUserPrompt("default-session", prompt);
+					client.sendUserPrompt(prompt);
 				}}
 			/>
 		</Box>
