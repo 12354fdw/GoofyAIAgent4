@@ -26,6 +26,32 @@ function toolEntryFactory(
 	);
 }
 
+function reasoningFactory(
+	history: CheckpointEntryTypes[],
+	reasoningCheckpoint: Extract<CheckpointEntryTypes, { type: "reasoning" }>,
+) {
+	if (history.at(-1)! !== reasoningCheckpoint)
+		return (
+			<Text dimColor italic>
+				{"🛈 "} {"Reasoning"}
+			</Text>
+		);
+
+	return (
+		<Box flexDirection="column">
+			<Text dimColor italic>
+				{"🛈 "} {"Reasoning"}
+			</Text>
+
+			<Box paddingLeft={2}>
+				<Text dimColor italic>
+					{reasoningCheckpoint.content}
+				</Text>
+			</Box>
+		</Box>
+	);
+}
+
 type HistoryProps = {
 	history: CheckpointEntryTypes[];
 };
@@ -57,9 +83,7 @@ export const History = ({ history }: HistoryProps) => {
 					case "reasoning": {
 						return (
 							<Box key={index} marginTop={1}>
-								<Text dimColor italic>
-									{"🛈 "} {history.at(-1)!.type !== "reasoning" ? "Reasoning" : checkpoint.content}
-								</Text>
+								{reasoningFactory(history, checkpoint)}
 							</Box>
 						);
 					}
