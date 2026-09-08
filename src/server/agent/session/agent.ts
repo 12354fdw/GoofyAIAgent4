@@ -1,6 +1,6 @@
 import { ModelMessage } from "ai";
 import { StreamController } from "./streamController.js";
-import { StreamTypes } from "./streamTypes.js";
+import { StreamEvents } from "./streamTypes.js";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 
@@ -24,7 +24,7 @@ export class Agent {
 		this.streamController = new StreamController(this.params, toolRegistry, sessionController);
 	}
 
-	public async *stream(prompt: string): AsyncGenerator<StreamTypes> {
+	public async *stream(prompt: string): AsyncGenerator<StreamEvents> {
 		this.messages.push({
 			role: "user",
 			content: prompt,

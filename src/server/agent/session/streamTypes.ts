@@ -1,6 +1,10 @@
-export type StreamTypes =
+export type StreamEvents =
 	| {
 			type: "token";
+			content: string;
+	  }
+	| {
+			type: "reasoning";
 			content: string;
 	  }
 	| {

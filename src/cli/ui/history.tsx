@@ -47,9 +47,19 @@ export const History = ({ history }: HistoryProps) => {
 
 					case "assistant": {
 						return (
-							<Box key={index} marginTop={1}>
+							<Box key={index}>
 								<Text>▲ </Text>
 								<Markdown>{checkpoint.content}</Markdown>
+							</Box>
+						);
+					}
+
+					case "reasoning": {
+						return (
+							<Box key={index} marginTop={1}>
+								<Text dimColor italic>
+									{"🛈 "} {history.at(-1)!.type !== "reasoning" ? "Reasoning" : checkpoint.content}
+								</Text>
 							</Box>
 						);
 					}

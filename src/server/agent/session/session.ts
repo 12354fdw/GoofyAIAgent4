@@ -33,7 +33,7 @@ export class Session {
 
 	private appendTextContentCheckpoint(registry: SessionWebsocketRegistry, index: number, delta: string) {
 		const entry = this.history.at(index)!;
-		if (entry.type !== "assistant" && entry.type !== "user")
+		if (entry.type !== "assistant" && entry.type !== "user" && entry.type !== "reasoning")
 			throw new Error(`Checkpoint type isn't text-based at index ${index}: ${entry.type}`);
 		entry!.content += delta;
 
@@ -68,6 +68,13 @@ export class Session {
 				case "token": {
 					if (this.getLatestType() !== "assistant")
 						this.appendCheckpoint(registry, { type: "assistant", content: "" });
+					this.appendTextContentCheckpoint(registry, -1, part.content);
+					break;
+				}
+
+				case "reasoning": {
+					if (this.getLatestType() !== "reasoning")
+						this.appendCheckpoint(registry, { type: "reasoning", content: "" });
 					this.appendTextContentCheckpoint(registry, -1, part.content);
 					break;
 				}

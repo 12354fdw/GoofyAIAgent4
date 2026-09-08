@@ -10,6 +10,10 @@ export type CheckpointEntryTypes =
 			content: string;
 	  }
 	| {
+			type: "reasoning";
+			content: string;
+	  }
+	| {
 			type: "step_end";
 	  }
 	| {

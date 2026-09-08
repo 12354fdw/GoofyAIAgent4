@@ -4,7 +4,7 @@ import { SessionController, SessionParameters } from "./sessionController.js";
 import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { toolApproval } from "../security.js";
-import { StreamTypes } from "./streamTypes.js";
+import { StreamEvents } from "./streamTypes.js";
 
 export class StreamController {
 	private agent!: ToolLoopAgent;
@@ -18,7 +18,7 @@ export class StreamController {
 		this.createAgent();
 	}
 
-	public async *stream(messages: ModelMessage[]): AsyncGenerator<StreamTypes> {
+	public async *stream(messages: ModelMessage[]): AsyncGenerator<StreamEvents> {
 		this.createAgent();
 		const result = await this.agent.stream({
 			messages,
@@ -29,6 +29,9 @@ export class StreamController {
 			switch (part.type) {
 				case "text-delta":
 					yield { type: "token", content: part.text };
+					break;
+				case "reasoning-delta":
+					yield { type: "reasoning", content: part.text };
 					break;
 				case "tool-call":
 					yield {

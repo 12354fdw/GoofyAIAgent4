@@ -35,7 +35,7 @@ export class CheckpointDeltaDecoder {
 
 			case "entry_text_content_addition": {
 				const entry = this.history.at(delta.index)!;
-				if (entry.type !== "assistant" && entry.type !== "user")
+				if (entry.type !== "assistant" && entry.type !== "user" && entry.type !== "reasoning")
 					throw new Error(`Checkpoint type isn't text-based!`);
 
 				entry.content += delta.delta;
