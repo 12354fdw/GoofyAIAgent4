@@ -11,17 +11,22 @@ function toolEntryFactory(
 	checkpoint: Extract<CheckpointEntryTypes, { type: "tool" }>,
 	color: LiteralUnion<ForegroundColorName, string>,
 ) {
+	let resultText: string = "";
+	switch (checkpoint.status) {
+		case "done":
+			resultText = `\n\r  ╰─── ${truncate(JSONAttemptStringify(checkpoint.result), 50)}`;
+			break;
+		case "error":
+			resultText = `\n\r  ╰─── Error message: "${(JSON.parse(checkpoint.result) as Error).message}"`;
+			break;
+	}
 	return (
 		<Box key={index} marginTop={1}>
 			<Text color={color}>⬤ </Text>
 			<Text>
 				{checkpoint.toolName}({truncate(JSON.stringify(checkpoint.arguments), 50)})
 			</Text>
-			<Text>
-				{checkpoint.status !== "pending"
-					? `\n\r  ╰─── ${truncate(JSONAttemptStringify(checkpoint.result), 50)}`
-					: ""}
-			</Text>
+			<Text>{resultText}</Text>
 		</Box>
 	);
 }
@@ -96,7 +101,7 @@ export const History = ({ history }: HistoryProps) => {
 							case "done":
 								return toolEntryFactory(index, checkpoint, "green");
 
-							case "rejected":
+							case "error":
 								return toolEntryFactory(index, checkpoint, "red");
 						}
 					}

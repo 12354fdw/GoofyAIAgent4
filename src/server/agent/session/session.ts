@@ -113,6 +113,35 @@ export class Session {
 					this.history.with(index, entry);
 					break;
 				}
+
+				case "tool_error": {
+					const index = this.history.findLastIndex(
+						(entry) => entry.type === "tool" && entry.toolId === part.id,
+					);
+					if (index === -1) throw new Error(`No pending tool checkpoint with id ${part.id}`);
+
+					const entry = this.history.at(index)!;
+					if (entry.type !== "tool") throw new Error(`Checkpoint isn't a tool at index ${index}`);
+					entry.status = "error";
+					const error = part.error;
+					entry.result = JSON.stringify({
+						message:
+							error instanceof Error
+								? error.message
+								: typeof error === "string"
+									? error
+									: JSON.stringify(error),
+					});
+
+					registry.broadcast(this.sessionName, {
+						type: "entry_modification",
+						index,
+						content: entry,
+					} satisfies NetworkedCheckpointDeltaData);
+
+					this.history.with(index, entry);
+					break;
+				}
 			}
 		}
 	}

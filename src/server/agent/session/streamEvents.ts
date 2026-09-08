@@ -13,13 +13,17 @@ export type StreamEvents =
 	| {
 			type: "tool_start";
 			name: string;
-			arguments: JSON;
+			arguments: object;
 			id: string;
 	  }
 	| {
 			type: "tool_end";
-			name: string;
-			result: JSON;
+			result: object;
+			id: string;
+	  }
+	| {
+			type: "tool_error";
+			error: Error;
 			id: string;
 	  }
 	| {

@@ -4,7 +4,7 @@ import { SessionController, SessionParameters } from "./sessionController.js";
 import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { toolApproval } from "../security.js";
-import { StreamEvents } from "./streamTypes.js";
+import { StreamEvents } from "./streamEvents.js";
 
 export class StreamController {
 	private agent!: ToolLoopAgent;
@@ -37,13 +37,23 @@ export class StreamController {
 					yield {
 						type: "tool_start",
 						name: part.toolName,
-						arguments: part.input as JSON,
+						arguments: part.input as object,
 						id: part.toolCallId,
 					};
 					break;
 				case "tool-result":
-					yield { type: "tool_end", name: part.toolName, result: part.output as JSON, id: part.toolCallId };
+					yield { type: "tool_end", result: part.output as object, id: part.toolCallId };
 					break;
+				case "tool-error": {
+					console.log("tool errored!");
+					const error = part.error as Error;
+					yield {
+						type: "tool_error",
+						error,
+						id: part.toolCallId,
+					};
+					break;
+				}
 				case "finish-step":
 					yield { type: "step_end" };
 					break;

@@ -18,11 +18,11 @@ export type CheckpointEntryTypes =
 	  }
 	| {
 			type: "tool";
-			status: "pending" | "done" | "rejected";
+			status: "pending" | "done" | "error";
 
 			toolName: string;
 			toolId: string;
 
 			result: string;
-			arguments: JSON;
+			arguments: object;
 	  };
