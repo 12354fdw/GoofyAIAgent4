@@ -165,6 +165,12 @@ export class Session {
 					this.sessionData.history.with(index, entry);
 					break;
 				}
+
+				case "finished": {
+					this.appendCheckpoint(registry, {
+						type: "finished",
+					});
+				}
 			}
 		}
 	}
