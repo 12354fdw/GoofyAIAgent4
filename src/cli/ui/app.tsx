@@ -5,6 +5,7 @@ import { Prompt } from "./prompt.js";
 import { History } from "./history.js";
 import { Client } from "../../client/client.js";
 import { ClientSession } from "../../client/clientSession.js";
+import { AgentStatus } from "./agentStatus.js";
 
 type AppProps = {
 	client: Client;
@@ -12,22 +13,25 @@ type AppProps = {
 
 type AppState = {
 	history: CheckpointEntryTypes[];
+	session: ClientSession | null;
 };
 
 export class App extends Component<AppProps, AppState> {
-	private defaultSession!: ClientSession;
 	override state: AppState = {
 		history: [],
+		session: null,
 	};
 
 	override async componentDidMount() {
-		this.defaultSession = await this.props.client.connectToSession("default-session");
+		const session = await this.props.client.connectToSession("default-session");
 
-		this.defaultSession.onCheckpointChange = (history: CheckpointEntryTypes[]) => {
+		session.onCheckpointChange = (history: CheckpointEntryTypes[]) => {
 			this.setState({
 				history,
 			});
 		};
+
+		this.setState({ session });
 	}
 
 	override render() {
@@ -35,9 +39,10 @@ export class App extends Component<AppProps, AppState> {
 			<Box flexDirection="column">
 				<History history={this.state.history}></History>
 
+				{this.state.session ? <AgentStatus session={this.state.session} /> : null}
 				<Prompt
 					onSubmit={(prompt: string) => {
-						this.defaultSession.sendUserPrompt(prompt);
+						this.state.session?.sendUserPrompt(prompt);
 					}}
 				/>
 			</Box>

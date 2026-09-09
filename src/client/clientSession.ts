@@ -10,6 +10,12 @@ export class ClientSession {
 
 	public onCheckpointChange: (history: CheckpointEntryTypes[]) => void = () => {};
 
+	public onPendingChange: (isPending: boolean) => void = () => {};
+
+	public getSessionData() {
+		return this.sessionData;
+	}
+
 	private constructor(
 		private sessionName: string,
 		private rpc: ComlinkClient,
@@ -22,11 +28,13 @@ export class ClientSession {
 			if (newEntry.type === "user") {
 				this.sessionData.isPending = true;
 				this.sessionData.promptTime = new Date().getTime();
+				this.onPendingChange(true);
 			}
 
 			if (newEntry.type === "finished") {
 				this.sessionData.isPending = false;
 				this.sessionData.finishTime = new Date().getTime();
+				this.onPendingChange(false);
 			}
 
 			this.sessionData.history = history;
