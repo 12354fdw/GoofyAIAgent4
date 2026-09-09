@@ -7,7 +7,7 @@ export class CheckpointDeltaDecoder {
 	private deltas: NetworkedCheckpointDeltas[] = [];
 	private currentOrder: number = 0;
 
-	public onChange: (history: CheckpointEntryTypes[]) => void = () => {};
+	public onChange: (history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => void = () => {};
 
 	constructor(ws: WebSocket) {
 		ws.on("message", (raw) => {
@@ -49,7 +49,7 @@ export class CheckpointDeltaDecoder {
 			}
 		}
 
-		this.onChange([...this.history]);
+		this.onChange([...this.history], this.history.at(-1)!);
 		this.decodeDelta();
 	}
 }
