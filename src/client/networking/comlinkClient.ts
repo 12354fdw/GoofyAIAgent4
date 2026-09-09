@@ -4,9 +4,8 @@ import { ComlinkClientNetworking } from "./comlinkClientNetworking.js";
 export class ComlinkClient {
 	constructor(private networking: ComlinkClientNetworking) {}
 
-	public async sendUserPrompt(sessionName: string, prompt: string) {
-		const remote = this.networking.remote;
-		remote.processUserRequest(sessionName, prompt);
+	public sendUserPrompt(sessionName: string, prompt: string) {
+		this.networking.remote.processUserRequest(sessionName, prompt);
 	}
 
 	public async createSession(sesionName: string, params: SessionParameters) {

@@ -21,21 +21,19 @@ export class ComlinkClientNetworking {
 		this.remote = wrap<ComlinkServerAPI>(createEndpoint(this.socket));
 	}
 
-	public async awaitReady() {
+	public awaitReady(): Promise<void> {
 		return this.readyOrNot.awaitReady();
 	}
 
-	public async createCheckpointSocket(): Promise<WebSocket> {
+	public createCheckpointSocket(): Promise<WebSocket> {
 		const socket = new WebSocket(`ws://localhost:${this.port}`);
 
-		await new Promise<void>((resolve, reject) => {
+		return new Promise<WebSocket>((resolve, reject) => {
 			socket.once("open", () => {
 				socket.send(JSON.stringify({ mode: "session_stream_mode" }));
-				resolve();
+				resolve(socket);
 			});
 			socket.once("error", reject);
 		});
-
-		return socket;
 	}
 }
