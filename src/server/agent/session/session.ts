@@ -1,5 +1,6 @@
 import { CheckpointEntryTypes } from "../../../shared/checkpoints/checkpointTypes.js";
 import { NetworkedCheckpointDeltaData } from "../../../shared/checkpoints/networkedCheckpoints.js";
+import { SessionData } from "../../../shared/types/sessionData.js";
 import { SessionWebsocketRegistry } from "../../networking/checkpointSocketRegistry.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { Agent } from "./agent.js";
@@ -7,7 +8,13 @@ import { SessionController, SessionParameters } from "./sessionController.js";
 
 export class Session {
 	private agent: Agent;
-	private history: CheckpointEntryTypes[] = [];
+	private sessionData: SessionData = {
+		history: [],
+
+		isPending: false,
+		promptTime: 0,
+		finishTime: 0,
+	};
 
 	constructor(
 		private sessionName: string,
@@ -18,12 +25,28 @@ export class Session {
 		this.agent = new Agent(params, toolRegistry, sessionController);
 	}
 
+	public getSessionData() {
+		return this.sessionData;
+	}
+
+	//
+
 	public streamRaw(prompt: string) {
 		return this.agent.stream(prompt);
 	}
 
 	private appendCheckpoint(registry: SessionWebsocketRegistry, checkpoint: CheckpointEntryTypes) {
-		this.history.push(checkpoint);
+		if (checkpoint.type === "user") {
+			this.sessionData.isPending = true;
+			this.sessionData.promptTime = new Date().getTime();
+		}
+
+		if (checkpoint.type === "finished") {
+			this.sessionData.isPending = false;
+			this.sessionData.finishTime = new Date().getTime();
+		}
+
+		this.sessionData.history.push(checkpoint);
 
 		registry.broadcast(this.sessionName, {
 			type: "entry_addition",
@@ -32,7 +55,7 @@ export class Session {
 	}
 
 	private appendTextContentCheckpoint(registry: SessionWebsocketRegistry, index: number, delta: string) {
-		const entry = this.history.at(index)!;
+		const entry = this.sessionData.history.at(index)!;
 		if (entry.type !== "assistant" && entry.type !== "user" && entry.type !== "reasoning")
 			throw new Error(`Checkpoint type isn't text-based at index ${index}: ${entry.type}`);
 		entry!.content += delta;
@@ -43,11 +66,11 @@ export class Session {
 			delta,
 		} satisfies NetworkedCheckpointDeltaData);
 
-		this.history.with(index, entry);
+		this.sessionData.history.with(index, entry);
 	}
 
 	private getLatestType() {
-		return this.history.at(-1)!.type;
+		return this.sessionData.history.at(-1)!.type;
 	}
 
 	public async streamCheckpointDeltas(registry: SessionWebsocketRegistry, prompt: string) {
@@ -94,12 +117,12 @@ export class Session {
 				}
 
 				case "tool_end": {
-					const index = this.history.findLastIndex(
+					const index = this.sessionData.history.findLastIndex(
 						(entry) => entry.type === "tool" && entry.toolId === part.id,
 					);
 					if (index === -1) throw new Error(`No pending tool checkpoint with id ${part.id}`);
 
-					const entry = this.history.at(index)!;
+					const entry = this.sessionData.history.at(index)!;
 					if (entry.type !== "tool") throw new Error(`Checkpoint isn't a tool at index ${index}`);
 					entry.status = "done";
 					entry.result = JSON.stringify(part.result);
@@ -110,17 +133,17 @@ export class Session {
 						content: entry,
 					} satisfies NetworkedCheckpointDeltaData);
 
-					this.history.with(index, entry);
+					this.sessionData.history.with(index, entry);
 					break;
 				}
 
 				case "tool_error": {
-					const index = this.history.findLastIndex(
+					const index = this.sessionData.history.findLastIndex(
 						(entry) => entry.type === "tool" && entry.toolId === part.id,
 					);
 					if (index === -1) throw new Error(`No pending tool checkpoint with id ${part.id}`);
 
-					const entry = this.history.at(index)!;
+					const entry = this.sessionData.history.at(index)!;
 					if (entry.type !== "tool") throw new Error(`Checkpoint isn't a tool at index ${index}`);
 					entry.status = "error";
 					const error = part.error;
@@ -139,7 +162,7 @@ export class Session {
 						content: entry,
 					} satisfies NetworkedCheckpointDeltaData);
 
-					this.history.with(index, entry);
+					this.sessionData.history.with(index, entry);
 					break;
 				}
 			}

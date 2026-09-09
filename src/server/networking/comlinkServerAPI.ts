@@ -19,4 +19,8 @@ export class ComlinkServerAPI {
 	public async createSession(sessionName: string, params: SessionParameters) {
 		this.controller.createSession(sessionName, params);
 	}
+
+	public async getSessionData(sessionName: string) {
+		return this.controller.getSession(sessionName).getSessionData();
+	}
 }

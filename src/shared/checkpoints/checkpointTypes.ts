@@ -1,5 +1,3 @@
-export type CheckpointTypes = "user" | "assistant" | "step_end" | "tool";
-
 export type CheckpointEntryTypes =
 	| {
 			type: "user";
@@ -15,6 +13,9 @@ export type CheckpointEntryTypes =
 	  }
 	| {
 			type: "step_end";
+	  }
+	| {
+			type: "finished";
 	  }
 	| {
 			type: "tool";
