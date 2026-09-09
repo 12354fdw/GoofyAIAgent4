@@ -11,7 +11,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 	const [prompt, setPrompt] = useState("");
 
 	return (
-		<Box flexDirection="column" marginTop={1}>
+		<Box flexDirection="column">
 			<Divider />
 			<Box>
 				<Text color="blue">{"> "}</Text>
