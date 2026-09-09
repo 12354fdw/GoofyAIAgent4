@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { LOGGER } from "../../server/logger.js";
 
 export interface SearXNGResult {
@@ -42,7 +42,7 @@ export async function webSearch(query: string) {
                 query,
             });
         } else {
-            console.error("Web search failed, no idea what the error is. Uhhhhhhh....", {
+            LOGGER.error("Web search failed, no idea what the error is. Uhhhhhhh....", {
                 error,
                 query,
             });
