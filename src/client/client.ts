@@ -2,6 +2,7 @@ import WebSocket from "ws";
 import { ComlinkClient } from "./networking/comlinkClient.js";
 import { ComlinkClientNetworking } from "./networking/comlinkClientNetworking.js";
 import { CheckpointDeltaDecoder } from "./networking/checkpointDeltaDecoder.js";
+import { ClientSession } from "./clientSession.js";
 
 export class Client {
 	private rpc: ComlinkClient;
@@ -24,5 +25,9 @@ export class Client {
 
 		const instance = new Client(networking, streamSocket);
 		return instance;
+	}
+
+	public connectToSession(sessionName: string): Promise<ClientSession> {
+		return ClientSession.create(sessionName, this.rpc, this.networking);
 	}
 }
