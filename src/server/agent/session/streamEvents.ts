@@ -1,3 +1,5 @@
+import { SessionUsage } from "../../../shared/types/sessionUsage.js";
+
 export type StreamEvents =
 	| {
 			type: "token";
@@ -9,6 +11,7 @@ export type StreamEvents =
 	  }
 	| {
 			type: "step_end";
+			usage: SessionUsage;
 	  }
 	| {
 			type: "tool_start";

@@ -31,7 +31,7 @@ function agentStatusTextFactory(sessionData: SessionData) {
 	if (sessionData.finishTime !== 0) {
 		return (
 			<Text dimColor italic>
-				{"[ ] Evaporated Water for"} {formatSeconds((sessionData.finishTime - sessionData.promptTime) / 1000)}
+				{" Evaporated Water for"} {formatSeconds((sessionData.finishTime - sessionData.promptTime) / 1000)}
 			</Text>
 		);
 	}
@@ -47,9 +47,11 @@ export const AgentStatus = ({ session }: AgentStatusProps) => {
 	const [sessionData, setSessionData] = useState<SessionData>(() => session.getSessionData());
 
 	useEffect(() => {
-		session.onPendingChange = () => {
+		const connection = session.onPendingChange.connect(() => {
 			setSessionData(session.getSessionData());
-		};
+		});
+
+		return () => connection.disconnect();
 	}, [session]);
 
 	const [, setTick] = useState(0);
