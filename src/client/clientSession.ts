@@ -4,13 +4,14 @@ import { CheckpointDeltaDecoder } from "./networking/checkpointDeltaDecoder.js";
 import { ComlinkClientNetworking } from "./networking/comlinkClientNetworking.js";
 import { CheckpointEntryTypes } from "../shared/checkpoints/checkpointTypes.js";
 import { SessionData } from "../shared/types/sessionData.js";
+import { Signal } from "../shared/signal.js";
 
 export class ClientSession {
 	private decoder: CheckpointDeltaDecoder;
 
-	public onCheckpointChange: (history: CheckpointEntryTypes[]) => void = () => {};
+	public readonly onCheckpointChange = new Signal<(history: CheckpointEntryTypes[]) => void>();
 
-	public onPendingChange: (isPending: boolean) => void = () => {};
+	public readonly onPendingChange = new Signal<(isPending: boolean) => void>();
 
 	public getSessionData() {
 		return this.sessionData;
@@ -24,21 +25,21 @@ export class ClientSession {
 	) {
 		this.decoder = new CheckpointDeltaDecoder(streamSocket, this.sessionData.history, sessionData.usage);
 
-		this.decoder.onChange = (history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => {
+		this.decoder.onChange.connect((history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => {
 			if (newEntry.type === "user") {
 				this.sessionData.isPending = true;
 				this.sessionData.promptTime = new Date().getTime();
-				this.onPendingChange(true);
+				this.onPendingChange.fire(true);
 			}
 
 			if (newEntry.type === "finished") {
 				this.sessionData.isPending = false;
 				this.sessionData.finishTime = new Date().getTime();
-				this.onPendingChange(false);
+				this.onPendingChange.fire(false);
 			}
 
-			this.onCheckpointChange(history);
-		};
+			this.onCheckpointChange.fire(history);
+		});
 	}
 
 	public static async create(sessionName: string, rpc: ComlinkClient, networking: ComlinkClientNetworking) {

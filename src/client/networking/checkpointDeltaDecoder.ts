@@ -2,12 +2,13 @@ import WebSocket from "ws";
 import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { NetworkedCheckpointDeltas } from "../../shared/checkpoints/networkedCheckpoints.js";
 import { SessionUsage } from "../../shared/types/sessionUsage.js";
+import { Signal } from "../../shared/signal.js";
 
 export class CheckpointDeltaDecoder {
 	private deltas: NetworkedCheckpointDeltas[] = [];
 	private currentOrder: number = 0;
 
-	public onChange: (history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => void = () => {};
+	public onChange = new Signal<(history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => void>();
 
 	constructor(
 		ws: WebSocket,
@@ -60,7 +61,7 @@ export class CheckpointDeltaDecoder {
 			}
 		}
 
-		this.onChange(this.historyRef, this.historyRef.at(-1)!);
+		this.onChange.fire(this.historyRef, this.historyRef.at(-1)!);
 		this.decodeDelta();
 	}
 }

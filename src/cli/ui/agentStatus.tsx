@@ -47,9 +47,11 @@ export const AgentStatus = ({ session }: AgentStatusProps) => {
 	const [sessionData, setSessionData] = useState<SessionData>(() => session.getSessionData());
 
 	useEffect(() => {
-		session.onPendingChange = () => {
+		const connection = session.onPendingChange.connect(() => {
 			setSessionData(session.getSessionData());
-		};
+		});
+
+		return () => connection.disconnect();
 	}, [session]);
 
 	const [, setTick] = useState(0);

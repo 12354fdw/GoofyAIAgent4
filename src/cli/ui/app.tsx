@@ -6,6 +6,7 @@ import { History } from "./history.js";
 import { Client } from "../../client/client.js";
 import { ClientSession } from "../../client/clientSession.js";
 import { AgentStatus } from "./agentStatus.js";
+import { SignalConnection } from "../../shared/signal.js";
 
 type AppProps = {
 	client: Client;
@@ -22,16 +23,25 @@ export class App extends Component<AppProps, AppState> {
 		session: null,
 	};
 
+	private historyConnection?: SignalConnection;
+	private mounted = true;
+
 	override async componentDidMount() {
 		const session = await this.props.client.connectToSession("default-session");
+		if (!this.mounted) return;
 
-		session.onCheckpointChange = (history: CheckpointEntryTypes[]) => {
+		this.historyConnection = session.onCheckpointChange.connect((history: CheckpointEntryTypes[]) => {
 			this.setState({
 				history,
 			});
-		};
+		});
 
 		this.setState({ session });
+	}
+
+	override componentWillUnmount() {
+		this.mounted = false;
+		this.historyConnection?.disconnect();
 	}
 
 	override render() {
