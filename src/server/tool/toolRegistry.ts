@@ -30,7 +30,7 @@ export class ToolRegistry {
 
 	private registerBuiltinTools() {
 		this.register("get_time", Tool_GetTime);
-		this.register("execute_bash", Tool_ExecuteCommand);
+		this.register("execute_command", Tool_ExecuteCommand);
 		this.register("ssh_bash", Tool_SshBash);
 		this.register("web_search", Tool_WebSearch);
 	}
