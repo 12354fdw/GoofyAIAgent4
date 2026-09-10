@@ -7,6 +7,7 @@ import { Client } from "../../client/client.js";
 import { ClientSession } from "../../client/clientSession.js";
 import { AgentStatus } from "./agentStatus.js";
 import { SignalConnection } from "../../shared/signal.js";
+import { SessionStatus } from "./sessionStatus.js";
 
 type AppProps = {
 	client: Client;
@@ -55,6 +56,8 @@ export class App extends Component<AppProps, AppState> {
 						this.state.session?.sendUserPrompt(prompt);
 					}}
 				/>
+
+				{this.state.session ? <SessionStatus session={this.state.session} /> : null}
 			</Box>
 		);
 	}

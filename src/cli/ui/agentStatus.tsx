@@ -31,7 +31,7 @@ function agentStatusTextFactory(sessionData: SessionData) {
 	if (sessionData.finishTime !== 0) {
 		return (
 			<Text dimColor italic>
-				{"[ ] Evaporated Water for"} {formatSeconds((sessionData.finishTime - sessionData.promptTime) / 1000)}
+				{" Evaporated Water for"} {formatSeconds((sessionData.finishTime - sessionData.promptTime) / 1000)}
 			</Text>
 		);
 	}
