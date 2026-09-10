@@ -2,8 +2,7 @@ import { Tool } from "ai";
 import { Tool_GetTime } from "../../tools/getTime.js";
 import { Tool_ExecuteCommand } from "../../tools/executeCommand.js";
 import { Tool_SshBash } from "../../tools/sshBash.js";
-import { Tool_WebSearch } from "../../tools/webSearch/websearch.js";
-import { Tool_RawWebSearch } from "../../tools/webSearch/rawWebSearch.js";
+import { Tool_WebSearch } from "../../tools/webSearch/webSearch.js";
 
 export class ToolRegistry {
 	private static instance: ToolRegistry;
@@ -34,7 +33,6 @@ export class ToolRegistry {
 		this.register("execute_bash", Tool_ExecuteCommand);
 		this.register("ssh_bash", Tool_SshBash);
 		this.register("web_search", Tool_WebSearch);
-		this.register("raw_web_search", Tool_RawWebSearch);
 	}
 
 	//

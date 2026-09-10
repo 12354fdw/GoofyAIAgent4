@@ -2,7 +2,7 @@ import { tool } from "ai";
 import z from "zod";
 import { webSearch } from "./common.js";
 
-export const Tool_RawWebSearch = tool({
+export const Tool_WebSearch = tool({
 	description: "searches the web, and its the raw searxng result",
 	inputSchema: z.object({
 		query: z.string().describe("the search query string"),
