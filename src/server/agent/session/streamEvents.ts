@@ -9,6 +9,7 @@ export type StreamEvents =
 	  }
 	| {
 			type: "step_end";
+			usage: { cost: number; promptTokens: number; completionTokens: number; totalTokens: number };
 	  }
 	| {
 			type: "tool_start";

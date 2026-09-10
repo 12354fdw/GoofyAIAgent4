@@ -54,9 +54,27 @@ export class StreamController {
 					};
 					break;
 				}
-				case "finish-step":
-					yield { type: "step_end" };
+				case "finish-step": {
+					const meta = part.providerMetadata?.openrouter as
+						| {
+								cost?: number;
+								promptTokens: number;
+								completionTokens: number;
+								totalTokens: number;
+						  }
+						| undefined;
+
+					yield {
+						type: "step_end",
+						usage: {
+							cost: meta?.cost ?? 0,
+							promptTokens: meta?.promptTokens ?? 0,
+							completionTokens: meta?.completionTokens ?? 0,
+							totalTokens: meta?.totalTokens ?? 0,
+						},
+					};
 					break;
+				}
 				case "finish":
 					yield { type: "finished" };
 					break;
