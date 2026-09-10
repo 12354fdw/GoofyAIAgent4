@@ -22,7 +22,7 @@ export class ClientSession {
 		private sessionData: SessionData,
 		streamSocket: WebSocket,
 	) {
-		this.decoder = new CheckpointDeltaDecoder(streamSocket);
+		this.decoder = new CheckpointDeltaDecoder(streamSocket, this.sessionData.history, sessionData.usage);
 
 		this.decoder.onChange = (history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => {
 			if (newEntry.type === "user") {
@@ -37,7 +37,6 @@ export class ClientSession {
 				this.onPendingChange(false);
 			}
 
-			this.sessionData.history = history;
 			this.onCheckpointChange(history);
 		};
 	}

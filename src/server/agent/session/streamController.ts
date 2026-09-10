@@ -1,5 +1,5 @@
 import { isLoopFinished, ModelMessage, ToolLoopAgent } from "ai";
-import { openrouter } from "@openrouter/ai-sdk-provider";
+import { openrouter, type OpenRouterUsageAccounting } from "@openrouter/ai-sdk-provider";
 import { SessionController, SessionParameters } from "./sessionController.js";
 import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
@@ -55,22 +55,17 @@ export class StreamController {
 					break;
 				}
 				case "finish-step": {
-					const meta = part.providerMetadata?.openrouter as
-						| {
-								cost?: number;
-								promptTokens: number;
-								completionTokens: number;
-								totalTokens: number;
-						  }
-						| undefined;
+					const providerUsage = (
+						part.providerMetadata?.openrouter as { usage?: OpenRouterUsageAccounting } | undefined
+					)?.usage;
 
 					yield {
 						type: "step_end",
 						usage: {
-							cost: meta?.cost ?? 0,
-							promptTokens: meta?.promptTokens ?? 0,
-							completionTokens: meta?.completionTokens ?? 0,
-							totalTokens: meta?.totalTokens ?? 0,
+							cost: providerUsage?.cost ?? 0,
+							promptTokens: part.usage.inputTokens ?? providerUsage?.promptTokens ?? 0,
+							completionTokens: part.usage.outputTokens ?? providerUsage?.completionTokens ?? 0,
+							totalTokens: part.usage.totalTokens ?? providerUsage?.totalTokens ?? 0,
 						},
 					};
 					break;

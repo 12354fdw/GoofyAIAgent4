@@ -91,10 +91,10 @@ export class Session {
 			switch (part.type) {
 				case "step_end": {
 					this.sessionData.usage = {
-						cost: this.sessionData.usage.cost + part.usage.completionTokens,
-						promptTokens: part.usage.promptTokens,
-						completionTokens: part.usage.completionTokens,
-						totalTokens: part.usage.totalTokens,
+						cost: this.sessionData.usage.cost + part.usage.cost,
+						promptTokens: this.sessionData.usage.promptTokens + part.usage.promptTokens,
+						completionTokens: this.sessionData.usage.completionTokens + part.usage.completionTokens,
+						totalTokens: this.sessionData.usage.totalTokens + part.usage.totalTokens,
 					};
 
 					this.appendCheckpoint(registry, { type: "step_end", usage: part.usage });
