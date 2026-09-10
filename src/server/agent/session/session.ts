@@ -14,6 +14,12 @@ export class Session {
 		isPending: false,
 		promptTime: 0,
 		finishTime: 0,
+		usage: {
+			cost: 0,
+			promptTokens: 0,
+			completionTokens: 0,
+			totalTokens: 0,
+		},
 	};
 
 	constructor(
@@ -84,7 +90,14 @@ export class Session {
 		for await (const part of stream) {
 			switch (part.type) {
 				case "step_end": {
-					this.appendCheckpoint(registry, { type: "step_end" });
+					this.sessionData.usage = {
+						cost: this.sessionData.usage.cost + part.usage.completionTokens,
+						promptTokens: part.usage.promptTokens,
+						completionTokens: part.usage.completionTokens,
+						totalTokens: part.usage.totalTokens,
+					};
+
+					this.appendCheckpoint(registry, { type: "step_end", usage: part.usage });
 					break;
 				}
 

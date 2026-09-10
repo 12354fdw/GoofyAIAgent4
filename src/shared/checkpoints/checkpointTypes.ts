@@ -1,3 +1,5 @@
+import { SessionUsage } from "../types/sessionUsage.js";
+
 export type CheckpointEntryTypes =
 	| {
 			type: "user";
@@ -13,6 +15,7 @@ export type CheckpointEntryTypes =
 	  }
 	| {
 			type: "step_end";
+			usage: SessionUsage;
 	  }
 	| {
 			type: "finished";
