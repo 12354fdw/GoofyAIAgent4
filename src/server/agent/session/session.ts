@@ -90,12 +90,10 @@ export class Session {
 		for await (const part of stream) {
 			switch (part.type) {
 				case "step_end": {
-					this.sessionData.usage = {
-						cost: this.sessionData.usage.cost + part.usage.cost,
-						promptTokens: this.sessionData.usage.promptTokens + part.usage.promptTokens,
-						completionTokens: this.sessionData.usage.completionTokens + part.usage.completionTokens,
-						totalTokens: this.sessionData.usage.totalTokens + part.usage.totalTokens,
-					};
+					this.sessionData.usage.cost += part.usage.cost;
+					this.sessionData.usage.promptTokens += part.usage.promptTokens;
+					this.sessionData.usage.completionTokens += part.usage.completionTokens;
+					this.sessionData.usage.totalTokens += part.usage.totalTokens;
 
 					this.appendCheckpoint(registry, { type: "step_end", usage: part.usage });
 					break;
