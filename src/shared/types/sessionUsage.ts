@@ -4,5 +4,7 @@ export interface SessionUsage {
 	completionTokens: number;
 	totalTokens: number;
 
+	accTotalTokens: number;
+
 	waterEvaporatedLiters: number;
 }

@@ -75,6 +75,7 @@ export class StreamController {
 							promptTokens: part.usage.inputTokens ?? providerUsage?.promptTokens ?? 0,
 							completionTokens: part.usage.outputTokens ?? providerUsage?.completionTokens ?? 0,
 							totalTokens: part.usage.totalTokens ?? providerUsage?.totalTokens ?? 0,
+							accTotalTokens: 0,
 							waterEvaporatedLiters: 0,
 						},
 					};

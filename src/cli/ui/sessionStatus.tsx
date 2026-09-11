@@ -24,9 +24,9 @@ export const SessionStatus = ({ session }: SessionStatusProps) => {
 
 	return (
 		<Text italic dimColor>
-			{` Session cost: $${formattedCost} `.padEnd(25)}
-			{`Tokens: ${formatSIPrefix(usage.totalTokens)} tok`.padEnd(20)}
-			{`Water Evaporated: ~${formatSIPrefix(usage.waterEvaporatedLiters)}L`.padEnd(5)}
+			{` Session cost: $${formattedCost} `.padEnd(24)}
+			{` Tokens: (${formatSIPrefix(usage.accTotalTokens)} / ${formatSIPrefix(usage.totalTokens)} tok)`.padEnd(31)}
+			{` Water Evaporated: ~${formatSIPrefix(usage.waterEvaporatedLiters)}L`.padEnd(5)}
 		</Text>
 	);
 };
