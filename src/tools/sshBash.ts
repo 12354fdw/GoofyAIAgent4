@@ -17,22 +17,23 @@ export const Tool_SshBash = tool({
 
 	needsApproval: true,
 	execute: async ({ host, cmd, user, password, timeout }) => {
-		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
+		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve, reject) => {
 			console.log();
 			LOGGER.warn(`executing ssh bash '${cmd}' on '${host}' as '${user}' with timeout ${timeout}s`);
 
 			let settled = false;
 
-			const finish = (stdout: string, stderr: string, exitCode: number) => {
+			const finish = (stdout: string, stderr: string, exitCode: number, isError: boolean) => {
 				if (settled) return;
 				settled = true;
 				clearTimeout(connectionTimer);
 				conn.end();
-				resolve({ stdout, stderr, exitCode });
+				if (isError) reject({ stdout, stderr, exitCode });
+				if (!isError) resolve({ stdout, stderr, exitCode });
 			};
 
 			const connectionTimer = setTimeout(() => {
-				finish("", `Command timed out after ${timeout}s`, 124);
+				finish("", `Command timed out after ${timeout}s`, 124, true);
 			}, timeout * 1000);
 
 			const conn = new Client();
@@ -41,7 +42,7 @@ export const Tool_SshBash = tool({
 				if (settled) return;
 				conn.exec(cmd, (err, stream) => {
 					if (err) {
-						finish("", err.message, 1);
+						finish("", err.message, 1, true);
 						return;
 					}
 
@@ -49,7 +50,7 @@ export const Tool_SshBash = tool({
 					let stderr = "";
 					stream
 						.on("close", (code: number) => {
-							finish(stdout, stderr, code ?? 1);
+							finish(stdout, stderr, code ?? 1, false);
 						})
 						.on("data", (data: Buffer) => {
 							stdout += data.toString();
@@ -60,7 +61,7 @@ export const Tool_SshBash = tool({
 				});
 			})
 				.on("error", (err) => {
-					finish("", err.message, 1);
+					finish("", err.message, 1, true);
 				})
 				.connect({
 					host,

@@ -40,12 +40,12 @@ export const Tool_ExecuteCommand = tool({
 
 	needsApproval: true,
 	execute: async ({ cmd, timeout }) => {
-		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve) => {
+		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve, reject) => {
 			console.log();
 			LOGGER.warn(`executing command '${cmd}' with timeout ${timeout}s`);
 			exec(cmd, { timeout: timeout * 1000 }, (error, stdout, stderr) => {
 				if (error && error.killed) {
-					resolve({
+					reject({
 						stdout,
 						stderr: stderr || `Command timed out after ${timeout}s`,
 						exitCode: 124,
