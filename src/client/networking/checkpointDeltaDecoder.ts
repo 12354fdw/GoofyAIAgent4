@@ -38,11 +38,11 @@ export class CheckpointDeltaDecoder {
 
 				if (delta.content.type !== "step_end") break;
 
-				this.usageRef.cost += delta.content.usage.cost;
-				this.usageRef.promptTokens += delta.content.usage.promptTokens;
-				this.usageRef.completionTokens += delta.content.usage.completionTokens;
-				this.usageRef.totalTokens += delta.content.usage.totalTokens;
-				this.usageRef.waterEvaporatedLiters += delta.content.usage.waterEvaporatedLiters;
+				this.usageRef.cost = delta.content.usage.cost;
+				this.usageRef.promptTokens = delta.content.usage.promptTokens;
+				this.usageRef.completionTokens = delta.content.usage.completionTokens;
+				this.usageRef.totalTokens = delta.content.usage.totalTokens;
+				this.usageRef.waterEvaporatedLiters = delta.content.usage.waterEvaporatedLiters;
 
 				break;
 			}
