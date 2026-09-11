@@ -16,7 +16,6 @@ export const Tool_Curl = tool({
 
 	execute: async ({ link, timeout }) => {
 			return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve, reject) => {
-				console.log();
 				LOGGER.warn(`Curling webpage '${link}' with timeout ${timeout}s`);
 				exec("curl -sL " + link, { timeout: timeout * 1000 }, (error, stdout, stderr) => {
 					if (error && error.killed) {
