@@ -4,7 +4,7 @@ import { SessionData } from "../../../shared/types/sessionData.js";
 import { SessionWebsocketRegistry } from "../../networking/checkpointSocketRegistry.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { Agent } from "./agent.js";
-import { SessionController, SessionParameters } from "./sessionController.js";
+import { SessionController, SessionParameters } from "../sessionController.js";
 
 export class Session {
 	private agent: Agent;

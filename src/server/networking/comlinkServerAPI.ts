@@ -1,4 +1,4 @@
-import { SessionController, SessionParameters } from "../agent/session/sessionController.js";
+import { SessionController, SessionParameters } from "../agent/sessionController.js";
 import { SessionWebsocketRegistry } from "./checkpointSocketRegistry.js";
 
 export class ComlinkServerAPI {

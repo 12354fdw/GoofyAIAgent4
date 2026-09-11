@@ -1,6 +1,6 @@
 import { isLoopFinished, ModelMessage, ToolLoopAgent } from "ai";
 import { openrouter, type OpenRouterUsageAccounting } from "@openrouter/ai-sdk-provider";
-import { SessionController, SessionParameters } from "./sessionController.js";
+import { SessionController, SessionParameters } from "../sessionController.js";
 import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { toolApproval } from "../security.js";
@@ -45,7 +45,6 @@ export class StreamController {
 					yield { type: "tool_end", result: part.output as object, id: part.toolCallId };
 					break;
 				case "tool-error": {
-					console.log("tool errored!");
 					const error = part.error as Error;
 					yield {
 						type: "tool_error",
@@ -66,6 +65,7 @@ export class StreamController {
 							promptTokens: part.usage.inputTokens ?? providerUsage?.promptTokens ?? 0,
 							completionTokens: part.usage.outputTokens ?? providerUsage?.completionTokens ?? 0,
 							totalTokens: part.usage.totalTokens ?? providerUsage?.totalTokens ?? 0,
+							waterEvaporatedLiters: 0,
 						},
 					};
 					break;

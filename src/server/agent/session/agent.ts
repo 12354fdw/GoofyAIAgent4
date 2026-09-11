@@ -1,7 +1,7 @@
 import { ModelMessage } from "ai";
 import { StreamController } from "./streamController.js";
 import { StreamEvents } from "./streamEvents.js";
-import { SessionController, SessionParameters } from "./sessionController.js";
+import { SessionController, SessionParameters } from "../sessionController.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 
 export class Agent {

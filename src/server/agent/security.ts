@@ -1,6 +1,6 @@
 import { Tool, TypedToolCall } from "ai";
 import { ToolRegistry } from "../tool/toolRegistry.js";
-import { SessionController } from "./session/sessionController.js";
+import { SessionController } from "./sessionController.js";
 
 export async function toolApproval(
 	toolCall: TypedToolCall<NoInfer<{ [k: string]: Tool }>>,

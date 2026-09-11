@@ -1,6 +1,6 @@
-import { InstructionInfo } from "../../util.js";
-import { ToolRegistry } from "../../tool/toolRegistry.js";
-import { Session } from "./session.js";
+import { InstructionInfo } from "../util.js";
+import { ToolRegistry } from "../tool/toolRegistry.js";
+import { Session } from "./session/session.js";
 
 export interface SessionParameters {
 	model: string;
