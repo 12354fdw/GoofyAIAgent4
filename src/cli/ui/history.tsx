@@ -14,7 +14,7 @@ function toolEntryFactory(
 	let resultText: string = "";
 	switch (checkpoint.status) {
 		case "done":
-			resultText = `\n\r  ╰─── ${truncate(JSONAttemptStringify(checkpoint.result), 50)}`;
+			resultText = `\n\r  ╰─── ${truncate(JSONAttemptStringify(checkpoint.result), 500)}`;
 			break;
 		case "error":
 			resultText = `\n\r  ╰─── Error message: "${(JSON.parse(checkpoint.result) as Error).message}"`;
@@ -24,7 +24,7 @@ function toolEntryFactory(
 		<Box key={index} marginTop={1}>
 			<Text color={color}>⬤ </Text>
 			<Text>
-				{checkpoint.toolName}({truncate(JSON.stringify(checkpoint.arguments), 50)})
+				{checkpoint.toolName}({truncate(JSON.stringify(checkpoint.arguments), 500)})
 			</Text>
 			<Text>{resultText}</Text>
 		</Box>

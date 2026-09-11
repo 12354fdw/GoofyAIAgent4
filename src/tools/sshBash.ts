@@ -18,7 +18,6 @@ export const Tool_SshBash = tool({
 	needsApproval: true,
 	execute: async ({ host, cmd, user, password, timeout }) => {
 		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve, reject) => {
-			console.log();
 			LOGGER.warn(`executing ssh bash '${cmd}' on '${host}' as '${user}' with timeout ${timeout}s`);
 
 			let settled = false;
