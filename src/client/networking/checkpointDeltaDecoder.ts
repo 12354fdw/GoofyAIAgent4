@@ -42,6 +42,7 @@ export class CheckpointDeltaDecoder {
 				this.usageRef.promptTokens += delta.content.usage.promptTokens;
 				this.usageRef.completionTokens += delta.content.usage.completionTokens;
 				this.usageRef.totalTokens += delta.content.usage.totalTokens;
+				this.usageRef.waterEvaporatedLiters += delta.content.usage.waterEvaporatedLiters;
 
 				break;
 			}
