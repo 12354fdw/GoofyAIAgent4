@@ -30,7 +30,7 @@ export class Session {
 		toolRegistry: ToolRegistry,
 		private sessionController: SessionController,
 	) {
-		this.agent = new Agent(params, toolRegistry, sessionController);
+		this.agent = new Agent(params, toolRegistry, this.sessionData, sessionController);
 	}
 
 	public getSessionData() {

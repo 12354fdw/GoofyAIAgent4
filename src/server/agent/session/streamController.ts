@@ -5,15 +5,25 @@ import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { toolApproval } from "../security.js";
 import { StreamEvents } from "./streamEvents.js";
+import { SessionData } from "../../../shared/types/sessionData.js";
+import { Compactor, COMPACTION_TOKEN_COUNT } from "../compaction.js";
+
+export type MessagesController = {
+	getMessages: () => ModelMessage[];
+	setMessages: (messages: ModelMessage[]) => void;
+};
 
 export class StreamController {
+	private compactor = new Compactor();
 	private agent!: ToolLoopAgent;
 	private streamResult?: Awaited<ReturnType<ToolLoopAgent["stream"]>>;
 
 	constructor(
+		private sessionDataRef: SessionData,
 		private params: SessionParameters,
 		private toolRegistry: ToolRegistry,
 		private sessionController: SessionController,
+		private messagesController: MessagesController,
 	) {
 		this.createAgent();
 	}
@@ -94,6 +104,12 @@ export class StreamController {
 			tools: this.toolRegistry.getTools(this.params.toolBlacklist),
 
 			stopWhen: isLoopFinished(),
+			onStepEnd: async () => {
+				if (this.sessionDataRef.usage.totalTokens < COMPACTION_TOKEN_COUNT) return;
+
+				const compacted = await this.compactor.compact(this.messagesController.getMessages());
+				this.messagesController.setMessages(compacted);
+			},
 
 			toolApproval: ({ toolCall }) => toolApproval(toolCall, this.sessionController, this.toolRegistry),
 		});

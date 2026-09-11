@@ -3,6 +3,7 @@ import { StreamController } from "./streamController.js";
 import { StreamEvents } from "./streamEvents.js";
 import { SessionController, SessionParameters } from "../sessionController.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
+import { SessionData } from "../../../shared/types/sessionData.js";
 
 export class Agent {
 	private streamController: StreamController;
@@ -13,6 +14,7 @@ export class Agent {
 	constructor(
 		_params: SessionParameters,
 		toolRegistry: ToolRegistry,
+		sessionDataRef: SessionData,
 		private sessionController: SessionController,
 	) {
 		this.params = {
@@ -21,7 +23,12 @@ export class Agent {
 			toolBlacklist: _params.toolBlacklist ?? [],
 		};
 
-		this.streamController = new StreamController(this.params, toolRegistry, sessionController);
+		this.streamController = new StreamController(sessionDataRef, this.params, toolRegistry, sessionController, {
+			getMessages: () => this.messages,
+			setMessages: (messages) => {
+				this.messages = messages;
+			},
+		});
 	}
 
 	public async *stream(prompt: string): AsyncGenerator<StreamEvents> {
