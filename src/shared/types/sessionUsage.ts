@@ -3,4 +3,6 @@ export interface SessionUsage {
 	promptTokens: number;
 	completionTokens: number;
 	totalTokens: number;
+
+	waterEvaporatedLiters: number;
 }

@@ -19,6 +19,8 @@ export class Session {
 			promptTokens: 0,
 			completionTokens: 0,
 			totalTokens: 0,
+
+			waterEvaporatedLiters: 0,
 		},
 	};
 
@@ -95,7 +97,11 @@ export class Session {
 					this.sessionData.usage.completionTokens += part.usage.completionTokens;
 					this.sessionData.usage.totalTokens += part.usage.totalTokens;
 
-					this.appendCheckpoint(registry, { type: "step_end", usage: part.usage });
+					// funny water calculations
+					const joules = this.sessionData.usage.totalTokens * 2;
+					this.sessionData.usage.waterEvaporatedLiters = joules / 2260000;
+
+					this.appendCheckpoint(registry, { type: "step_end", usage: this.sessionData.usage });
 					break;
 				}
 
