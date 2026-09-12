@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { LOGGER } from "../../shared/globals/logger.js";
 
 export interface SearXNGResult {

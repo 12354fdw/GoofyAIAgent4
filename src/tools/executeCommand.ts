@@ -6,7 +6,7 @@ import { LOGGER } from "../shared/globals/logger.js";
 import os from "node:os";
 
 const execAsync = promisify(exec);
-const MAX_BUFFER = 1 * 1024 * 1024
+const MAX_BUFFER = 1 * 1024 * 1024;
 
 function getOsAgentDescription(platformName: string): string {
 	switch (platformName) {
@@ -47,7 +47,11 @@ export const Tool_ExecuteCommand = tool({
 		LOGGER.warn(`Executing command '${cmd}' with timeout ${timeout}s`);
 
 		try {
-			const { stdout, stderr } = await execAsync(cmd, { timeout: timeout * 1000 + 1000, windowsHide: true, maxBuffer: MAX_BUFFER });
+			const { stdout, stderr } = await execAsync(cmd, {
+				timeout: timeout * 1000 + 1000,
+				windowsHide: true,
+				maxBuffer: MAX_BUFFER,
+			});
 
 			return {
 				stdout: stdout,
