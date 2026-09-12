@@ -19,12 +19,14 @@ function toolEntryFactory(
 		case "error":
 			resultText = `\n\r  ╰─── Error message: "${(JSON.parse(checkpoint.result) as Error).message}"`;
 			break;
+		case "rejected":
+			resultText = `\n\r  ╰─── Security Rejection: "${checkpoint.result}"`;
+			break;
 	}
 	return (
 		<Box key={index} marginBottom={1}>
-			<Text color={color}>{"⬤ "}</Text>
-			<Text>
-				{checkpoint.toolName}({truncate(JSON.stringify(checkpoint.arguments), 500)})
+			<Text color={color}>
+				{`⬤ ${checkpoint.toolName}(${truncate(JSON.stringify(checkpoint.arguments), 500)})`}
 			</Text>
 			<Text>{resultText}</Text>
 		</Box>
@@ -98,6 +100,8 @@ export const History = ({ history }: HistoryProps) => {
 								return toolEntryFactory(index, checkpoint, "green");
 
 							case "error":
+								return toolEntryFactory(index, checkpoint, "red");
+							case "rejected":
 								return toolEntryFactory(index, checkpoint, "red");
 						}
 					}

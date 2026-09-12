@@ -81,6 +81,16 @@ export class StreamController {
 					};
 					break;
 				}
+				case "tool-approval-response": {
+					if (!part.approved) {
+						yield {
+							type: "tool_rejection",
+							message: part.reason ?? "No reason provided",
+							id: part.toolCall.toolCallId,
+						};
+					}
+					break;
+				}
 				case "finish":
 					yield { type: "finished" };
 					break;

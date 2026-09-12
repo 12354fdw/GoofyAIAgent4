@@ -191,10 +191,33 @@ export class Session {
 					break;
 				}
 
+				case "tool_rejection": {
+					const index = this.sessionData.history.findLastIndex(
+						(entry) => entry.type === "tool" && entry.toolId === part.id,
+					);
+					if (index === -1) throw new Error(`No pending tool checkpoint with id ${part.id}`);
+
+					const entry = this.sessionData.history.at(index)!;
+					if (entry.type !== "tool") throw new Error(`Checkpoint isn't a tool at index ${index}`);
+
+					entry.status = "rejected";
+					entry.result = part.message;
+
+					registry.broadcast(this.sessionName, {
+						type: "entry_modification",
+						index,
+						content: entry,
+					} satisfies NetworkedCheckpointDeltaData);
+
+					this.sessionData.history.with(index, entry);
+					break;
+				}
+
 				case "finished": {
 					this.appendCheckpoint(registry, {
 						type: "finished",
 					});
+					break;
 				}
 			}
 		}

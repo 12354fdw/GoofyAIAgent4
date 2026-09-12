@@ -30,5 +30,10 @@ export type StreamEvents =
 			id: string;
 	  }
 	| {
+			type: "tool_rejection";
+			message: string;
+			id: string;
+	  }
+	| {
 			type: "finished";
 	  };
