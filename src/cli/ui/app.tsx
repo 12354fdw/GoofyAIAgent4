@@ -8,6 +8,7 @@ import { ClientSession } from "../../client/clientSession.js";
 import { AgentStatus } from "./agentStatus.js";
 import { SignalConnection } from "../../shared/signal.js";
 import { SessionStatus } from "./sessionStatus.js";
+import { SessionContext } from "./sessionContext.js";
 
 type AppProps = {
 	client: Client;
@@ -47,18 +48,20 @@ export class App extends Component<AppProps, AppState> {
 
 	override render() {
 		return (
-			<Box flexDirection="column">
-				<History history={this.state.history}></History>
+			<SessionContext.Provider value={this.state.session}>
+				<Box flexDirection="column">
+					<History history={this.state.history}></History>
 
-				{this.state.session ? <AgentStatus session={this.state.session} /> : null}
-				<Prompt
-					onSubmit={(prompt: string) => {
-						this.state.session?.sendUserPrompt(prompt);
-					}}
-				/>
+					{this.state.session ? <AgentStatus /> : null}
+					<Prompt
+						onSubmit={(prompt: string) => {
+							this.state.session?.sendUserPrompt(prompt);
+						}}
+					/>
 
-				{this.state.session ? <SessionStatus session={this.state.session} /> : null}
-			</Box>
+					{this.state.session ? <SessionStatus /> : null}
+				</Box>
+			</SessionContext.Provider>
 		);
 	}
 }

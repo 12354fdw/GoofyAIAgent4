@@ -12,10 +12,12 @@ export class Session {
 	private lastTotalTokens = 0;
 	private sessionData: SessionData = {
 		history: [],
+		lastUserPrompt: "",
 
 		isPending: false,
 		promptTime: 0,
 		finishTime: 0,
+
 		usage: {
 			cost: 0,
 			promptTokens: 0,

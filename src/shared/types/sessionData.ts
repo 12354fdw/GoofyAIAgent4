@@ -5,6 +5,8 @@ export interface SessionData {
 	history: CheckpointEntryTypes[];
 	usage: SessionUsage;
 
+	lastUserPrompt: string;
+
 	isPending: boolean;
 	promptTime: number;
 	finishTime: number;

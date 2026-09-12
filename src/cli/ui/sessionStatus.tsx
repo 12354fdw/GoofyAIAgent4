@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ClientSession } from "../../client/clientSession.js";
 import { SessionData } from "../../shared/types/sessionData.js";
 import { Text } from "ink";
 import { formatSIPrefix } from "../../shared/SIPrefixer.js";
+import { SessionContext } from "./sessionContext.js";
 
-type SessionStatusProps = {
-	session: ClientSession;
-};
-
-export const SessionStatus = ({ session }: SessionStatusProps) => {
+export const SessionStatus = () => {
+	const session = useContext(SessionContext) as ClientSession;
 	const [sessionData, setSessionData] = useState<SessionData>(() => session.getSessionData());
 
 	useEffect(() => {

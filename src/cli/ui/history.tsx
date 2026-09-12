@@ -21,8 +21,8 @@ function toolEntryFactory(
 			break;
 	}
 	return (
-		<Box key={index} marginTop={1}>
-			<Text color={color}>⬤ </Text>
+		<Box key={index} marginBottom={1}>
+			<Text color={color}>{"⬤ "}</Text>
 			<Text>
 				{checkpoint.toolName}({truncate(JSON.stringify(checkpoint.arguments), 500)})
 			</Text>
@@ -68,7 +68,7 @@ export const History = ({ history }: HistoryProps) => {
 				switch (checkpoint.type) {
 					case "user": {
 						return (
-							<Box key={index} flexDirection="column" backgroundColor="#084a82" marginTop={1}>
+							<Box key={index} flexDirection="column" backgroundColor="#084a82" marginBottom={1}>
 								<Text>
 									{">"} {checkpoint.content}
 								</Text>
@@ -78,7 +78,7 @@ export const History = ({ history }: HistoryProps) => {
 
 					case "assistant": {
 						return (
-							<Box key={index}>
+							<Box key={index} marginBottom={1}>
 								<Text>▲ </Text>
 								<Markdown>{checkpoint.content}</Markdown>
 							</Box>
@@ -86,11 +86,7 @@ export const History = ({ history }: HistoryProps) => {
 					}
 
 					case "reasoning": {
-						return (
-							<Box key={index} marginTop={1}>
-								{reasoningFactory(history, checkpoint)}
-							</Box>
-						);
+						return <Box key={index}>{reasoningFactory(history, checkpoint)}</Box>;
 					}
 
 					case "tool": {

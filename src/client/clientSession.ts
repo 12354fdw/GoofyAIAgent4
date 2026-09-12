@@ -27,6 +27,7 @@ export class ClientSession {
 
 		this.decoder.onChange.connect((history: CheckpointEntryTypes[], newEntry: CheckpointEntryTypes) => {
 			if (newEntry.type === "user") {
+				sessionData.lastUserPrompt = newEntry.content;
 				this.sessionData.isPending = true;
 				this.sessionData.promptTime = new Date().getTime();
 				this.onPendingChange.fire(true);
