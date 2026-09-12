@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { LOGGER } from "../logger.js";
+import { LOGGER } from "../../shared/globals/logger.js";
 import { expose } from "comlink";
 import { ComlinkServerAPI } from "./comlinkServerAPI.js";
 import { createEndpoint } from "../../shared/createEndpoint.js";

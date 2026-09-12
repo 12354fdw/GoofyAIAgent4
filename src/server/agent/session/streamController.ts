@@ -105,11 +105,13 @@ export class StreamController {
 			tools: this.toolRegistry.getTools(this.params.toolBlacklist),
 
 			stopWhen: isLoopFinished(),
-			onStepEnd: async () => {
-				if (this.sessionDataRef.usage.totalTokens < COMPACTION_TOKEN_COUNT) return;
+			prepareStep: async ({ messages }) => {
+				if (this.sessionDataRef.usage.totalTokens < COMPACTION_TOKEN_COUNT) return undefined;
 
-				const compacted = await this.compactor.compact(this.messagesController.getMessages());
+				const compacted = await this.compactor.compact(messages);
 				this.messagesController.setMessages(compacted);
+
+				return { messages: compacted };
 			},
 
 			toolApproval: ({ toolCall }) => toolApproval(toolCall, this.sessionController, this.toolRegistry),

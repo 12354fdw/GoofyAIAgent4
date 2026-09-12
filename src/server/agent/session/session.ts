@@ -8,6 +8,8 @@ import { SessionController, SessionParameters } from "../sessionController.js";
 
 export class Session {
 	private agent: Agent;
+
+	private lastTotalTokens = 0;
 	private sessionData: SessionData = {
 		history: [],
 
@@ -94,14 +96,16 @@ export class Session {
 			switch (part.type) {
 				case "step_end": {
 					this.sessionData.usage.cost += part.usage.cost;
-					this.sessionData.usage.promptTokens += part.usage.promptTokens;
-					this.sessionData.usage.completionTokens += part.usage.completionTokens;
-					this.sessionData.usage.totalTokens += part.usage.totalTokens;
-					this.sessionData.usage.accTotalTokens += part.usage.totalTokens;
+					this.sessionData.usage.promptTokens = part.usage.promptTokens;
+					this.sessionData.usage.completionTokens = part.usage.completionTokens;
+					this.sessionData.usage.totalTokens = part.usage.totalTokens;
+					this.sessionData.usage.accTotalTokens += part.usage.totalTokens - this.lastTotalTokens;
 
 					// funny water calculations
 					const joules = this.sessionData.usage.accTotalTokens * 2;
 					this.sessionData.usage.waterEvaporatedLiters = joules / 2260000;
+
+					this.lastTotalTokens = part.usage.totalTokens;
 
 					this.appendCheckpoint(registry, { type: "step_end", usage: this.sessionData.usage });
 					break;

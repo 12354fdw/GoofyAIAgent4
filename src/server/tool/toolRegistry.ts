@@ -3,7 +3,6 @@ import { Tool_GetTime } from "../../tools/getTime.js";
 import { Tool_ExecuteCommand } from "../../tools/executeCommand.js";
 import { Tool_SshBash } from "../../tools/sshBash.js";
 import { Tool_WebSearch } from "../../tools/webSearch/webSearch.js";
-
 export class ToolRegistry {
 	private static instance: ToolRegistry;
 	private tools = new Map<string, Tool>();

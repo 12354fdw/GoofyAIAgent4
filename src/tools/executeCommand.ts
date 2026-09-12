@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import { exec } from "node:child_process";
 import z from "zod";
-import { LOGGER } from "../server/logger.js";
+import { LOGGER } from "../shared/globals/logger.js";
 import os from "node:os";
 
 function getOsAgentDescription(platformName: string): string {

@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import { Client } from "ssh2";
 import z from "zod";
-import { LOGGER } from "../server/logger.js";
+import { LOGGER } from "../shared/globals/logger.js";
 
 export const Tool_SshBash = tool({
 	description: "executes one bash command over a single ssh connection that terminates when the command finishes",
