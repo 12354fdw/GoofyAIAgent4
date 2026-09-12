@@ -1,5 +1,5 @@
 import { WebSocketServer } from "ws";
-import { LOGGER } from "./logger.js";
+import { LOGGER } from "../shared/globals/logger.js";
 import { handleConnection } from "./networking/handleConnection.js";
 
 const PORT = 4613;
