@@ -45,7 +45,7 @@ function htmlToMarkdown(html: string): string {
 }
 
 export const Tool_Curl = tool({
-	description: "Fetches a webpage and returns its content as markdown using the curl command.",
+	description: "Fetches a webpage and returns its content as markdown using the curl command. The webpage will be stripped, however, so use the raw curl command if necessary, this is used for reading websites.",
 	inputSchema: z.object({
 		link: z.url().describe("The link to fetch."),
 		timeout: z
