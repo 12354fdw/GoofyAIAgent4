@@ -2,8 +2,8 @@ import { openrouter } from "@openrouter/ai-sdk-provider";
 import { generateText, ModelMessage, pruneMessages } from "ai";
 import { readPrompt } from "../util.js";
 
-export const COMPACTION_TOKEN_COUNT = 750000;
-const PROTECT_TAIL_N = 20;
+export const COMPACTION_TOKEN_COUNT = 10_000;
+const PROTECT_TAIL_N = 5;
 
 export class Compactor {
 	constructor(private compactionModel: string = "deepseek/deepseek-v4-flash-0731") {}
@@ -31,12 +31,12 @@ export class Compactor {
 			model: openrouter(this.compactionModel),
 			instructions: readPrompt("SYSTEM/COMPACTION.md"),
 
-			prompt: middle,
+			prompt: JSON.stringify(middle),
 		});
 
 		const summaryMessage: ModelMessage = {
-			role: "system",
-			content: `[ COMPACTION ], SUMMARY:\n${summaryText}`,
+			role: "user",
+			content: `[ COMPACTION ], SUMMARY:\n${summaryText.text}`,
 		};
 
 		return [...head, summaryMessage, ...tail];
