@@ -38,6 +38,7 @@
     "globals": "^17.9.0",
     "ink": "^7.1.1",
     "ink-text-input": "^6.0.0",
+    "jsdom": "^30.0.1",
     "marked": "^9.1.6",
     "marked-terminal": "^6.2.0",
     "react": "^19.2.8",
