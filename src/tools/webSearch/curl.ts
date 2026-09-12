@@ -8,7 +8,7 @@ import { LOGGER } from "../../shared/globals/logger.js";
 const execFileAsync = promisify(execFile);
 const turndownService = new TurndownService();
 
-const MAX_BUFFER = 10 * 1024 * 1024;
+const MAX_BUFFER = 1024 * 1024;
 
 export const Tool_Curl = tool({
 	description: "Fetches a webpage and returns its content as markdown using the curl command.",
@@ -25,16 +25,16 @@ export const Tool_Curl = tool({
 				"curl",
 				[
 					"--silent",
-                    "--show-error",
-                    "--location",
+					"--show-error",
+					"--location",
 					"--fail",
 					"--max-time",
 					String(timeout),
-                    "--proto=http,https",
+					"--proto=http,https",
 					link,
 				],
 				{
-					timeout: (timeout * 1000) + 1000,
+					timeout: timeout * 1000 + 1000,
 					maxBuffer: MAX_BUFFER,
 					windowsHide: true,
 				},
