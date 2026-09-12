@@ -105,6 +105,21 @@ export const History = ({ history }: HistoryProps) => {
 								return toolEntryFactory(index, checkpoint, "red");
 						}
 					}
+
+					case "error": {
+						return (
+							<Box
+								key={index}
+								flexDirection="column"
+								height={3}
+								backgroundColor="#3d0000"
+								marginTop={1}
+								marginBottom={2}
+							>
+								<Text>{`\n   ${checkpoint.message}\n`}</Text>
+							</Box>
+						);
+					}
 				}
 			})}
 		</Box>

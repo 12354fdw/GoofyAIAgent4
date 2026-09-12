@@ -32,6 +32,7 @@ export class StreamController {
 		this.createAgent();
 		const result = await this.agent.stream({
 			messages,
+			onError: () => {},
 		} as never);
 		this.streamResult = result;
 

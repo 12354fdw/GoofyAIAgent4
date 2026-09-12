@@ -29,4 +29,8 @@ export type CheckpointEntryTypes =
 
 			result: string;
 			arguments: object;
+	  }
+	| {
+			type: "error";
+			message: string;
 	  };

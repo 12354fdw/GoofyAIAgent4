@@ -5,6 +5,8 @@ import { SessionWebsocketRegistry } from "../../networking/checkpointSocketRegis
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { Agent } from "./agent.js";
 import { SessionController, SessionParameters } from "../sessionController.js";
+import { StreamEvents } from "./streamEvents.js";
+import { APICallError } from "ai";
 
 export class Session {
 	private agent: Agent;
@@ -87,13 +89,39 @@ export class Session {
 	}
 
 	public async streamCheckpointDeltas(registry: SessionWebsocketRegistry, prompt: string) {
-		const stream = this.agent.stream(prompt);
-
 		this.appendCheckpoint(registry, {
 			type: "user",
 			content: prompt,
 		});
 
+		try {
+			const stream = this.agent.stream(prompt);
+			await this.encodeStreamingPackets(registry, stream);
+		} catch (raw: unknown) {
+			if (APICallError.isInstance(raw)) {
+				this.appendCheckpoint(registry, {
+					type: "error",
+					message: raw.message,
+				});
+			} else if (raw instanceof Error) {
+				this.appendCheckpoint(registry, {
+					type: "error",
+					message: raw.message,
+				});
+			} else {
+				this.appendCheckpoint(registry, {
+					type: "error",
+					message: "Unknown error",
+				});
+			}
+
+			this.appendCheckpoint(registry, {
+				type: "finished",
+			});
+		}
+	}
+
+	private async encodeStreamingPackets(registry: SessionWebsocketRegistry, stream: AsyncGenerator<StreamEvents>) {
 		for await (const part of stream) {
 			switch (part.type) {
 				case "step_end": {
