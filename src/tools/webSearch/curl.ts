@@ -13,7 +13,7 @@ const MAX_BUFFER = 10 * 1024 * 1024;
 export const Tool_Curl = tool({
 	description: "Fetches a webpage and returns its content as markdown using the curl command.",
 	inputSchema: z.object({
-		link: z.string().url().describe("The link to fetch."),
+		link: z.url().describe("The link to fetch."),
 		timeout: z.number().int().min(1).max(60).default(10).describe("Timeout in seconds."),
 	}),
 
