@@ -1,37 +1,62 @@
 import { tool } from "ai";
-import { exec } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import z from "zod";
-import { webSearch } from "./common.js";
 import TurndownService from "turndown";
 import { LOGGER } from "../../shared/globals/logger.js";
 
-const turndownService: TurndownService = new TurndownService();
+const execFileAsync = promisify(execFile);
+const turndownService = new TurndownService();
+
+const MAX_BUFFER = 10 * 1024 * 1024;
 
 export const Tool_Curl = tool({
-	description: "Returns a markdown-formatted HTML link, using curl.",
+	description: "Fetches a webpage and returns its content as markdown using the curl command.",
 	inputSchema: z.object({
-		link: z.string().describe(""),
-		timeout: z.number().default(10).describe("timeout in seconds, defaults to 10"),
+		link: z.string().url().describe("The link to fetch."),
+		timeout: z.number().int().min(1).max(60).default(10).describe("Timeout in seconds."),
 	}),
 
 	execute: async ({ link, timeout }) => {
-		return new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve, reject) => {
-			LOGGER.warn(`Curling webpage '${link}' with timeout ${timeout}s`);
-			exec("curl -sL " + link, { timeout: timeout * 1000 }, (error, stdout, stderr) => {
-				if (error && error.killed) {
-					reject({
-						stdout,
-						stderr: stderr || `Curl timed out after ${timeout}s`,
-						exitCode: 124,
-					});
-					return;
-				}
-				resolve({
-					stdout: turndownService.turndown(stdout),
-					stderr,
-					exitCode: error ? (typeof error.code === "number" ? error.code : 1) : 0,
-				});
-			});
-		});
+		LOGGER.warn(`Curling webpage '${link}' with timeout ${timeout}s`);
+
+		try {
+			const { stdout, stderr } = await execFileAsync(
+				"curl",
+				[
+					"--silent",
+                    "--show-error",
+                    "--location",
+					"--fail",
+					"--max-time",
+					String(timeout),
+                    "--proto=http,https",
+					link,
+				],
+				{
+					timeout: (timeout * 1000) + 1000,
+					maxBuffer: MAX_BUFFER,
+					windowsHide: true,
+				},
+			);
+
+			return {
+				stdout: turndownService.turndown(stdout),
+				stderr,
+				exitCode: 0,
+			};
+		} catch (error) {
+			const err = error as NodeJS.ErrnoException & {
+				stdout?: string;
+				stderr?: string;
+				signal?: string;
+			};
+
+			return {
+				stdout: "",
+				stderr: err.stderr ?? err.message,
+				exitCode: typeof err.code === "number" ? err.code : 1,
+			};
+		}
 	},
 });
