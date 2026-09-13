@@ -1,8 +1,8 @@
 import { Box, Text } from "ink";
 import { useContext, useEffect, useState } from "react";
-import { ClientSession } from "../../client/clientSession.js";
-import { SessionData } from "../../shared/types/sessionData.js";
-import { ClientContext } from "./clientContext.js";
+import { SessionData } from "../../../shared/types/sessionData.js";
+import { ClientContext } from "../clientContext.js";
+import { ClientSession } from "../../../client/clientSession.js";
 
 function formatSeconds(totalSeconds: number): string {
 	if (totalSeconds <= 0) return "0s";

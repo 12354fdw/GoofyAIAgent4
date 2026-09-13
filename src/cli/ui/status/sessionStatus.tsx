@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { ClientSession } from "../../client/clientSession.js";
-import { SessionData } from "../../shared/types/sessionData.js";
 import { Text } from "ink";
-import { formatSIPrefix } from "../../shared/SIPrefixer.js";
-import { ClientContext } from "./clientContext.js";
+import { formatSIPrefix } from "../../../shared/SIPrefixer.js";
+import { ClientContext } from "../clientContext.js";
+import { SessionData } from "../../../shared/types/sessionData.js";
+import { ClientSession } from "../../../client/clientSession.js";
 
 export const SessionStatus = () => {
 	const session = (useContext(ClientContext)?.currentSession ?? null) as ClientSession;
