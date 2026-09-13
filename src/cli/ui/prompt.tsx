@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { Divider } from "./elements/divider.js";
 import TextInput from "ink-text-input";
 import { ClientContext } from "./clientContext.js";
+import { CommandInformation } from "./commandInformation.js";
 
 type PromptProps = {
 	onSubmit: (prompt: string) => void;
@@ -22,17 +23,14 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 				<TextInput
 					placeholder={session !== null ? `  ${session.getSessionData().lastUserPrompt}` : "[No Session]"}
 					value={prompt}
-					onChange={(prompt: string) => {
-						setPrompt(prompt);
-
-						if (!cmdRegistry?.isCommand(prompt)) return;
-						console.log(cmdRegistry.getCompletions(prompt));
-					}}
+					onChange={setPrompt}
 					onSubmit={() => {
+						const trimPrompt = prompt.trim();
+						if (cmdRegistry?.isCommand(trimPrompt)) return;
+
+						// normal session stuff
 						if (!session) return;
 						if (session.getSessionData().isPending) return;
-
-						const trimPrompt = prompt.trim();
 						if (trimPrompt.length === 0) return;
 						onSubmit(trimPrompt);
 						setPrompt("");
@@ -40,6 +38,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 				/>
 			</Box>
 			<Divider />
+			<CommandInformation prompt={prompt} />
 		</Box>
 	);
 };

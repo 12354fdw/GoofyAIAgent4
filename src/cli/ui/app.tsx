@@ -10,16 +10,12 @@ import { ClientContext } from "./clientContext.js";
 import { SessionStatus } from "./status/sessionStatus.js";
 import { AgentStatus } from "./status/agentStatus.js";
 
-type AppProps = {
-	client: Client;
-};
-
 type AppState = {
 	history: CheckpointEntryTypes[];
 	session: ClientSession | null;
 };
 
-export class App extends Component<AppProps, AppState> {
+export class App extends Component<Record<string, never>, AppState> {
 	override state: AppState = {
 		history: [],
 		session: null,
@@ -28,8 +24,11 @@ export class App extends Component<AppProps, AppState> {
 	private historyConnection?: SignalConnection;
 	private mounted = true;
 
+	static contextType = ClientContext;
+	declare context: Client;
+
 	override async componentDidMount() {
-		const session = await this.props.client.connectToSession("default-session");
+		const session = await this.context.connectToSession("default-session");
 		if (!this.mounted) return;
 
 		this.historyConnection = session.onCheckpointChange.connect((history: CheckpointEntryTypes[]) => {
@@ -38,7 +37,7 @@ export class App extends Component<AppProps, AppState> {
 			});
 		});
 
-		this.props.client.currentSession = session;
+		this.context.currentSession = session;
 		this.setState({ session });
 	}
 
@@ -49,7 +48,7 @@ export class App extends Component<AppProps, AppState> {
 
 	override render() {
 		return (
-			<ClientContext.Provider value={this.props.client}>
+			<ClientContext.Provider value={this.context}>
 				<Box flexDirection="column">
 					<History history={this.state.history}></History>
 
