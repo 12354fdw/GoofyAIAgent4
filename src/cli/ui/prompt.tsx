@@ -12,6 +12,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 	const [prompt, setPrompt] = useState("");
 	const client = useContext(ClientContext);
 	const session = client?.currentSession ?? null;
+	const cmdRegistry = client?.commandRegistry;
 
 	return (
 		<Box flexDirection="column">
@@ -21,12 +22,19 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 				<TextInput
 					placeholder={session !== null ? `  ${session.getSessionData().lastUserPrompt}` : "[No Session]"}
 					value={prompt}
-					onChange={setPrompt}
+					onChange={(prompt: string) => {
+						setPrompt(prompt);
+
+						if (!cmdRegistry?.isCommand(prompt)) return;
+						console.log(cmdRegistry.getCompletions(prompt));
+					}}
 					onSubmit={() => {
 						if (!session) return;
 						if (session.getSessionData().isPending) return;
-						if (prompt.length === 0) return;
-						onSubmit(prompt);
+
+						const trimPrompt = prompt.trim();
+						if (trimPrompt.length === 0) return;
+						onSubmit(trimPrompt);
 						setPrompt("");
 					}}
 				/>
