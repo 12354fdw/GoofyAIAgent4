@@ -8,7 +8,7 @@ import { ClientSession } from "../../client/clientSession.js";
 import { AgentStatus } from "./agentStatus.js";
 import { SignalConnection } from "../../shared/signal.js";
 import { SessionStatus } from "./sessionStatus.js";
-import { SessionContext } from "./sessionContext.js";
+import { ClientContext } from "./clientContext.js";
 
 type AppProps = {
 	client: Client;
@@ -38,6 +38,7 @@ export class App extends Component<AppProps, AppState> {
 			});
 		});
 
+		this.props.client.currentSession = session;
 		this.setState({ session });
 	}
 
@@ -48,7 +49,7 @@ export class App extends Component<AppProps, AppState> {
 
 	override render() {
 		return (
-			<SessionContext.Provider value={this.state.session}>
+			<ClientContext.Provider value={this.props.client}>
 				<Box flexDirection="column">
 					<History history={this.state.history}></History>
 
@@ -61,7 +62,7 @@ export class App extends Component<AppProps, AppState> {
 
 					{this.state.session ? <SessionStatus /> : null}
 				</Box>
-			</SessionContext.Provider>
+			</ClientContext.Provider>
 		);
 	}
 }

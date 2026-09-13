@@ -2,7 +2,7 @@ import { Box, Text } from "ink";
 import { useContext, useEffect, useState } from "react";
 import { ClientSession } from "../../client/clientSession.js";
 import { SessionData } from "../../shared/types/sessionData.js";
-import { SessionContext } from "./sessionContext.js";
+import { ClientContext } from "./clientContext.js";
 
 function formatSeconds(totalSeconds: number): string {
 	if (totalSeconds <= 0) return "0s";
@@ -41,7 +41,7 @@ function agentStatusTextFactory(sessionData: SessionData) {
 }
 
 export const AgentStatus = () => {
-	const session = useContext(SessionContext) as ClientSession;
+	const session = (useContext(ClientContext)?.currentSession ?? null) as ClientSession;
 	const [sessionData, setSessionData] = useState<SessionData>(() => session.getSessionData());
 
 	useEffect(() => {

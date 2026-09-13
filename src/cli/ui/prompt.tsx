@@ -2,7 +2,7 @@ import { Box, Text } from "ink";
 import { useContext, useState } from "react";
 import { Divider } from "./divider.js";
 import TextInput from "ink-text-input";
-import { SessionContext } from "./sessionContext.js";
+import { ClientContext } from "./clientContext.js";
 
 type PromptProps = {
 	onSubmit: (prompt: string) => void;
@@ -10,7 +10,8 @@ type PromptProps = {
 
 export const Prompt = ({ onSubmit }: PromptProps) => {
 	const [prompt, setPrompt] = useState("");
-	const session = useContext(SessionContext);
+	const client = useContext(ClientContext);
+	const session = client?.currentSession ?? null;
 
 	return (
 		<Box flexDirection="column">
