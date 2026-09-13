@@ -5,10 +5,10 @@ import { Prompt } from "./prompt.js";
 import { History } from "./history.js";
 import { Client } from "../../client/client.js";
 import { ClientSession } from "../../client/clientSession.js";
-import { AgentStatus } from "./agentStatus.js";
 import { SignalConnection } from "../../shared/signal.js";
-import { SessionStatus } from "./sessionStatus.js";
 import { ClientContext } from "./clientContext.js";
+import { SessionStatus } from "./status/sessionStatus.js";
+import { AgentStatus } from "./status/agentStatus.js";
 
 type AppProps = {
 	client: Client;

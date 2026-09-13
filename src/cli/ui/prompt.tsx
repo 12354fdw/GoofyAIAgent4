@@ -1,6 +1,6 @@
 import { Box, Text } from "ink";
 import { useContext, useState } from "react";
-import { Divider } from "./divider.js";
+import { Divider } from "./elements/divider.js";
 import TextInput from "ink-text-input";
 import { ClientContext } from "./clientContext.js";
 

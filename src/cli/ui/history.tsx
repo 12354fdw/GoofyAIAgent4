@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import { Markdown } from "./markdown.js";
+import { Markdown } from "./elements/markdown.js";
 import { truncate } from "../../shared/truncate.js";
 import { LiteralUnion } from "type-fest";
 import { ForegroundColorName } from "chalk";
