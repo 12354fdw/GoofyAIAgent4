@@ -7,6 +7,7 @@ export function registerCommands(registry: CommandRegistry) {
 	registry.register(
 		new CommandBuilder()
 			.name("test")
+			.describe("just sends a message")
 			.execute((ctx: CommandContext) => {
 				ctx.sendMessage("hello from command!");
 			})
@@ -16,6 +17,7 @@ export function registerCommands(registry: CommandRegistry) {
 	registry.register(
 		new CommandBuilder()
 			.name("echo")
+			.describe("repeats the string you provided x times")
 			.parameter("text", z.string())
 			.execute((ctx, args) => {
 				ctx.sendMessage(args.text);

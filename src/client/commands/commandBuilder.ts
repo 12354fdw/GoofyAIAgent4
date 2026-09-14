@@ -8,6 +8,8 @@ export type InferSchemaShape<T extends Record<string, z.ZodTypeAny>> = {
 
 export class CommandBuilder<TParams extends Record<string, z.ZodTypeAny> = Record<string, z.ZodTypeAny>> {
 	private _name: string | undefined;
+	private description: string = "No description";
+
 	private parameterTypes: Record<string, z.ZodTypeAny> = {};
 	private parameterList: Array<{ name: string; type: z.ZodTypeAny }> = [];
 	private executor?: (ctx: CommandContext, args: InferSchemaShape<TParams>) => Promise<void> | void;
@@ -16,6 +18,11 @@ export class CommandBuilder<TParams extends Record<string, z.ZodTypeAny> = Recor
 
 	public name(name: string) {
 		this._name = name;
+		return this;
+	}
+
+	public describe(description: string) {
+		this.description = description;
 		return this;
 	}
 
@@ -41,6 +48,12 @@ export class CommandBuilder<TParams extends Record<string, z.ZodTypeAny> = Recor
 			throw new Error(`Unable to construct command since it has no name! (read trace to see registeration`);
 
 		if (!this.executor) throw new Error(`Unable to construct command "${this._name}" because it has no executor!`);
-		return new Command<TParams>(this._name, this.parameterList, this.parameterTypes, this.executor) as Command;
+		return new Command<TParams>(
+			this._name,
+			this.description,
+			this.parameterList,
+			this.parameterTypes,
+			this.executor,
+		) as Command;
 	}
 }

@@ -25,11 +25,14 @@ export const CommandSuggestions = ({ prompt }: CommandSuggestionsProps) => {
 					{"  No commands found"}
 				</Text>
 			) : (
-				commands.map((command) => (
-					<Text key={command} dimColor italic>
-						{`  ${command}`}
-					</Text>
-				))
+				commands.map((cmdName) => {
+					const cmdInformation = cmdRegistry.getCommand(cmdName);
+					return (
+						<Text key={cmdName} dimColor italic>
+							{`  /${cmdName} - ${cmdInformation.description}`}
+						</Text>
+					);
+				})
 			)}
 			<Divider />
 		</Box>

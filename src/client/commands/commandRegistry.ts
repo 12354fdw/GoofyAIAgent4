@@ -9,7 +9,7 @@ export class CommandRegistry {
 
 	public getCompletions(prompt: string): string[] {
 		const { commandName } = this.extractCommandInformation(prompt);
-		return [...this.commands.keys()].filter((name) => name.startsWith(commandName)).map((name) => `/${name}`);
+		return [...this.commands.keys()].filter((name) => name.startsWith(commandName));
 	}
 
 	public getCommand(name: string) {
