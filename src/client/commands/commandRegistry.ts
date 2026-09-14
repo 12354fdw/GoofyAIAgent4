@@ -13,10 +13,8 @@ function extractCommandInformation(prompt: string) {
 export class CommandRegistry {
 	private commands = new Map<string, Command>();
 
-	public register(name: string) {
-		const cmd = new Command(name);
-		this.commands.set(name, cmd);
-		return cmd;
+	public register(cmd: Command) {
+		this.commands.set(cmd.name, cmd);
 	}
 
 	public isCommand(prompt: string) {
