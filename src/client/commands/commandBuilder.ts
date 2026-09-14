@@ -38,6 +38,6 @@ export class CommandBuilder<TParams extends Record<string, z.ZodTypeAny> = Recor
 			throw new Error(`Unable to construct command since it has no name! (read trace to see registeration`);
 
 		if (!this.executor) throw new Error(`Unable to construct command "${this._name}" because it has no executor!`);
-		return new Command<TParams>(this._name, this.parameters, this.executor);
+		return new Command<TParams>(this._name, this.parameters, this.executor) as Command;
 	}
 }
