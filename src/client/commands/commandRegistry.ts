@@ -29,6 +29,21 @@ export class CommandRegistry {
 		return this.commands.has(name);
 	}
 
+	public verifyCommand(prompt: string) {
+		const info = this.extractCommandInformation(prompt);
+		if (!this.isValidCommandName(info.commandName)) return false;
+
+		const command = this.getCommand(info.commandName);
+
+		const args: Record<string, string> = {};
+		command.parameterList.forEach((param, index) => {
+			args[param.name] = info.args[index];
+		});
+
+		const result = command.getSchema().safeParse(args);
+		return result.success;
+	}
+
 	//
 
 	public extractCommandInformation(prompt: string) {

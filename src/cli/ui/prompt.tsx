@@ -15,6 +15,20 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 	const session = client?.currentSession ?? null;
 	const cmdRegistry = client?.commandRegistry;
 
+	const handleCommand = (trimPrompt: string) => {
+		if (!cmdRegistry?.verifyCommand(trimPrompt)) return;
+		console.log("executing command!");
+		setPrompt("");
+	};
+
+	const handleUserPrompt = (trimPrompt: string) => {
+		if (!session) return;
+		if (session.getSessionData().isPending) return;
+		if (trimPrompt.length === 0) return;
+		onSubmit(trimPrompt);
+		setPrompt("");
+	};
+
 	return (
 		<Box flexDirection="column">
 			<Divider />
@@ -26,14 +40,12 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 					onChange={setPrompt}
 					onSubmit={() => {
 						const trimPrompt = prompt.trim();
-						if (cmdRegistry?.isCommand(trimPrompt)) return;
+						if (cmdRegistry?.isCommand(trimPrompt)) {
+							handleCommand(trimPrompt);
+							return;
+						}
 
-						// normal session stuff
-						if (!session) return;
-						if (session.getSessionData().isPending) return;
-						if (trimPrompt.length === 0) return;
-						onSubmit(trimPrompt);
-						setPrompt("");
+						handleUserPrompt(trimPrompt);
 					}}
 				/>
 			</Box>
