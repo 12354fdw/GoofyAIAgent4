@@ -17,11 +17,14 @@ export const CommandDetails = ({ prompt }: CommandDetailsProps) => {
 
 	return (
 		<Box flexDirection="column">
-			<Text italic>Command Details</Text>
+			<Text italic bold>
+				Command Parameters:
+			</Text>
+
 			{cmd.parameterList.map(({ name, type }, idx) => {
 				return (
 					<Text italic dimColor key={idx}>
-						{`  ${name.padEnd(7)}`} - {type.type.padEnd(5)} = {promptInformation.args[idx]}
+						{`  ${name.padEnd(6)}`} ({type.type.padEnd(5)}) = {promptInformation.args[idx]}
 					</Text>
 				);
 			})}

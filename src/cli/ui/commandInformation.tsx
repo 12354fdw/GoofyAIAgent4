@@ -14,7 +14,8 @@ export const CommandInformation = ({ prompt }: CommandInformationProps) => {
 	if (!cmdRegistry?.isCommand(prompt)) return;
 
 	const details = cmdRegistry.extractCommandInformation(prompt);
-	return cmdRegistry.isValidCommandName(details.commandName) ? (
+	const hasSpaceAfterCommand = /^\s*\S+\s+/.test(prompt.slice(1));
+	return cmdRegistry.isValidCommandName(details.commandName) && hasSpaceAfterCommand ? (
 		<CommandDetails prompt={prompt} />
 	) : (
 		<CommandSuggestions prompt={prompt} />

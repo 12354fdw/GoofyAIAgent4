@@ -19,6 +19,7 @@ export function registerCommands(registry: CommandRegistry) {
 			.name("echo")
 			.describe("repeats the string you provided x times")
 			.parameter("text", z.string())
+			.parameter("times", z.number().positive())
 			.execute((ctx, args) => {
 				ctx.sendMessage(args.text);
 			})

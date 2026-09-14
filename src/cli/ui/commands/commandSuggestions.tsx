@@ -19,7 +19,10 @@ export const CommandSuggestions = ({ prompt }: CommandSuggestionsProps) => {
 
 	return (
 		<Box flexDirection="column">
-			<Text italic>Command Suggestions:</Text>
+			<Text italic bold>
+				Command Suggestions:
+			</Text>
+
 			{commands.length === 0 ? (
 				<Text dimColor italic>
 					{"  No commands found"}
