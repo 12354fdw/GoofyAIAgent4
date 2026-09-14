@@ -1,15 +1,5 @@
 import { Command } from "./command.js";
 
-function extractCommandInformation(prompt: string) {
-	const tokens = prompt.slice(1).trim().split(/\s+/);
-	const [commandName, ...args] = tokens;
-
-	return {
-		commandName,
-		args,
-	};
-}
-
 export class CommandRegistry {
 	private commands = new Map<string, Command>();
 
@@ -17,12 +7,37 @@ export class CommandRegistry {
 		this.commands.set(cmd.name, cmd);
 	}
 
+	public getCompletions(prompt: string): string[] {
+		const { commandName } = this.extractCommandInformation(prompt);
+		return [...this.commands.keys()].filter((name) => name.startsWith(commandName)).map((name) => `/${name}`);
+	}
+
+	public getCommand(name: string) {
+		const cmd = this.commands.get(name);
+		if (!cmd) throw new Error(`Unable to find command "${name}`);
+
+		return cmd;
+	}
+
+	//
+
 	public isCommand(prompt: string) {
 		return prompt.startsWith("/");
 	}
 
-	public getCompletions(prompt: string): string[] {
-		const { commandName } = extractCommandInformation(prompt);
-		return [...this.commands.keys()].filter((name) => name.startsWith(commandName)).map((name) => `/${name}`);
+	public isValidCommandName(name: string) {
+		return this.commands.has(name);
+	}
+
+	//
+
+	public extractCommandInformation(prompt: string) {
+		const tokens = prompt.slice(1).trim().split(/\s+/);
+		const [commandName, ...args] = tokens;
+
+		return {
+			commandName,
+			args,
+		};
 	}
 }
