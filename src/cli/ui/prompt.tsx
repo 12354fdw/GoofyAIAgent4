@@ -13,7 +13,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 	const [prompt, setPrompt] = useState("");
 	const client = useContext(ClientContext);
 	const session = client?.currentSession ?? null;
-	const cmdRegistry = client?.commandRegistry;
+	const cmdRegistry = client?.cmdSystem.cmdRegistry;
 
 	const handleCommand = (trimPrompt: string) => {
 		if (!cmdRegistry?.verifyCommand(trimPrompt)) return;

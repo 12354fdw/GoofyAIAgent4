@@ -9,7 +9,7 @@ type CommandInformationProps = {
 
 export const CommandInformation = ({ prompt }: CommandInformationProps) => {
 	const client = useContext(ClientContext);
-	const cmdRegistry = client?.commandRegistry;
+	const cmdRegistry = client?.cmdSystem.cmdRegistry;
 
 	if (!cmdRegistry?.isCommand(prompt)) return;
 

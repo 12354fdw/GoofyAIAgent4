@@ -10,7 +10,7 @@ type CommandSuggestionsProps = {
 
 export const CommandSuggestions = ({ prompt }: CommandSuggestionsProps) => {
 	const client = useContext(ClientContext) as Client;
-	const cmdRegistry = client.commandRegistry;
+	const cmdRegistry = client.cmdSystem.cmdRegistry;
 
 	const commands = cmdRegistry
 		.getCompletions(prompt)

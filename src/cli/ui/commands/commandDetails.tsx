@@ -10,7 +10,7 @@ type CommandDetailsProps = {
 
 export const CommandDetails = ({ prompt }: CommandDetailsProps) => {
 	const client = useContext(ClientContext) as Client;
-	const cmdRegistry = client.commandRegistry;
+	const cmdRegistry = client.cmdSystem.cmdRegistry;
 
 	const promptInformation = cmdRegistry.extractCommandInformation(prompt);
 	const cmd = cmdRegistry.getCommand(promptInformation.commandName);
