@@ -55,4 +55,13 @@ export class CommandRegistry {
 			args,
 		};
 	}
+
+	public parseParamter(cmd: Command, promptInfo: { commandName: string; args: string[] }): Record<string, string> {
+		const parsed: Record<string, string> = {};
+		cmd.parameterList.forEach((param, index) => {
+			parsed[param.name] = promptInfo.commandName[index];
+		});
+
+		return parsed;
+	}
 }

@@ -17,7 +17,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 
 	const handleCommand = (trimPrompt: string) => {
 		if (!cmdRegistry?.verifyCommand(trimPrompt)) return;
-		console.log("executing command!");
+		client?.cmdSystem.runCommand(trimPrompt);
 		setPrompt("");
 	};
 
