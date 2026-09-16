@@ -27,4 +27,14 @@ export function registerCommands(registry: CommandRegistry) {
 			})
 			.build(),
 	);
+
+	registry.register(
+		new CommandBuilder()
+			.name("throw")
+			.describe("just throws and error")
+			.handler(() => {
+				throw new Error("error thrown!");
+			})
+			.build(),
+	);
 }

@@ -114,7 +114,6 @@ export const History = ({ history }: HistoryProps) => {
 					}
 
 					case "error": {
-						/* eslint-disable prettier/prettier */
 						return (
 							<Box
 								key={index}
@@ -122,12 +121,11 @@ export const History = ({ history }: HistoryProps) => {
 								height={3}
 								backgroundColor="#3d0000"
 								marginTop={1}
-								marginBottom={2}
+								marginBottom={1}
 							>
-								<Text color="red" bold>{"\n"}  / ! \   {checkpoint.message}</Text>
+								<Text color="red" bold>{`\n  /!\\  ${checkpoint.message}`}</Text>
 							</Box>
 						);
-						/* eslint-enable prettier/prettier */
 					}
 
 					case "command_message": {
@@ -136,6 +134,22 @@ export const History = ({ history }: HistoryProps) => {
 								<Box paddingLeft={2}>
 									<Text>{`\n${checkpoint.content}\n`}</Text>
 								</Box>
+							</Box>
+						);
+					}
+
+					case "command_error": {
+						return (
+							<Box
+								key={index}
+								flexDirection="column"
+								height={3}
+								backgroundColor="#3d0000"
+								marginBottom={1}
+							>
+								<Text color="red" bold>
+									{`\n  / ! \\ ${checkpoint.content}`}
+								</Text>
 							</Box>
 						);
 					}

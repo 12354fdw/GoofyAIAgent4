@@ -32,7 +32,7 @@ export const CommandSuggestions = ({ prompt }: CommandSuggestionsProps) => {
 					const command = registry.get(cmdName);
 					return (
 						<Text key={cmdName} dimColor italic>
-							{`  /${cmdName} - ${command.description}`}
+							{`  /${cmdName.padEnd(10)} - ${command.description}`}
 						</Text>
 					);
 				})
