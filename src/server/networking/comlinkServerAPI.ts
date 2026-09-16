@@ -1,5 +1,5 @@
+import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { SessionController, SessionParameters } from "../agent/sessionController.js";
-import { SessionWebsocketRegistry } from "./checkpointSocketRegistry.js";
 
 export class ComlinkServerAPI {
 	private static instance: ComlinkServerAPI;
@@ -10,10 +10,9 @@ export class ComlinkServerAPI {
 	}
 
 	private controller = SessionController.getInstance();
-	private sessionWebsocketRegistry = SessionWebsocketRegistry.getInstance();
 
 	public async processUserRequest(sessionName: string, prompt: string) {
-		this.controller.getSession(sessionName).streamCheckpointDeltas(this.sessionWebsocketRegistry, prompt);
+		this.controller.getSession(sessionName).streamCheckpointDeltas(prompt);
 	}
 
 	public async createSession(sessionName: string, params: SessionParameters) {
@@ -22,5 +21,10 @@ export class ComlinkServerAPI {
 
 	public async getSessionData(sessionName: string) {
 		return this.controller.getSession(sessionName).getSessionData();
+	}
+
+	public async appendCheckpoints(sessionName: string, checkpoints: CheckpointEntryTypes[]) {
+		const session = this.controller.getSession(sessionName);
+		checkpoints.forEach((checkpoint) => session.appendCheckpoint(checkpoint));
 	}
 }

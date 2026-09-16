@@ -18,9 +18,9 @@ export class ClientSession {
 	}
 
 	private constructor(
-		private sessionName: string,
-		private rpc: ComlinkClient,
-		private sessionData: SessionData,
+		public readonly sessionName: string,
+		private readonly rpc: ComlinkClient,
+		private readonly sessionData: SessionData,
 		streamSocket: WebSocket,
 	) {
 		this.decoder = new CheckpointDeltaDecoder(streamSocket, this.sessionData.history, sessionData.usage);

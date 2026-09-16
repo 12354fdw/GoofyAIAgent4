@@ -33,4 +33,12 @@ export type CheckpointEntryTypes =
 	| {
 			type: "error";
 			message: string;
+	  }
+	| {
+			type: "command_message";
+			content: string;
+	  }
+	| {
+			type: "command_error";
+			content: string;
 	  };

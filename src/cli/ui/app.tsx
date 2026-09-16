@@ -5,21 +5,17 @@ import { Prompt } from "./prompt.js";
 import { History } from "./history.js";
 import { Client } from "../../client/client.js";
 import { ClientSession } from "../../client/clientSession.js";
-import { AgentStatus } from "./agentStatus.js";
 import { SignalConnection } from "../../shared/signal.js";
-import { SessionStatus } from "./sessionStatus.js";
-import { SessionContext } from "./sessionContext.js";
-
-type AppProps = {
-	client: Client;
-};
+import { ClientContext } from "./clientContext.js";
+import { SessionStatus } from "./status/sessionStatus.js";
+import { AgentStatus } from "./status/agentStatus.js";
 
 type AppState = {
 	history: CheckpointEntryTypes[];
 	session: ClientSession | null;
 };
 
-export class App extends Component<AppProps, AppState> {
+export class App extends Component<Record<string, never>, AppState> {
 	override state: AppState = {
 		history: [],
 		session: null,
@@ -28,8 +24,11 @@ export class App extends Component<AppProps, AppState> {
 	private historyConnection?: SignalConnection;
 	private mounted = true;
 
+	static contextType = ClientContext;
+	declare context: Client;
+
 	override async componentDidMount() {
-		const session = await this.props.client.connectToSession("default-session");
+		const session = await this.context.connectToSession("default-session");
 		if (!this.mounted) return;
 
 		this.historyConnection = session.onCheckpointChange.connect((history: CheckpointEntryTypes[]) => {
@@ -38,6 +37,7 @@ export class App extends Component<AppProps, AppState> {
 			});
 		});
 
+		this.context.currentSession = session;
 		this.setState({ session });
 	}
 
@@ -48,7 +48,7 @@ export class App extends Component<AppProps, AppState> {
 
 	override render() {
 		return (
-			<SessionContext.Provider value={this.state.session}>
+			<ClientContext.Provider value={this.context}>
 				<Box flexDirection="column">
 					<History history={this.state.history}></History>
 
@@ -61,7 +61,7 @@ export class App extends Component<AppProps, AppState> {
 
 					{this.state.session ? <SessionStatus /> : null}
 				</Box>
-			</SessionContext.Provider>
+			</ClientContext.Provider>
 		);
 	}
 }

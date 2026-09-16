@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import { Markdown } from "./markdown.js";
+import { Markdown } from "./elements/markdown.js";
 import { truncate } from "../../shared/truncate.js";
 import { LiteralUnion } from "type-fest";
 import { ForegroundColorName } from "chalk";
@@ -128,6 +128,16 @@ export const History = ({ history }: HistoryProps) => {
 							</Box>
 						);
 						/* eslint-enable prettier/prettier */
+					}
+
+					case "command_message": {
+						return (
+							<Box key={index} flexDirection="column" backgroundColor="#084a82" marginBottom={1}>
+								<Box paddingLeft={2}>
+									<Text>{`\n${checkpoint.content}\n`}</Text>
+								</Box>
+							</Box>
+						);
 					}
 				}
 			})}
