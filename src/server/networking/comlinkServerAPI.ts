@@ -23,4 +23,8 @@ export class ComlinkServerAPI {
 	public async getSessionData(sessionName: string) {
 		return this.controller.getSession(sessionName).getSessionData();
 	}
+
+	public async commandBroadcastMessage(sessionName: string, message: string) {
+		this.controller.getSession(sessionName)
+	}
 }

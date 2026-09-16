@@ -50,7 +50,42 @@ export class Session {
 		return this.agent.stream(prompt);
 	}
 
-	private appendCheckpoint(registry: SessionWebsocketRegistry, checkpoint: CheckpointEntryTypes) {
+	public async streamCheckpointDeltas(registry: SessionWebsocketRegistry, prompt: string) {
+		this.appendCheckpoint(registry, {
+			type: "user",
+			content: prompt,
+		});
+
+		try {
+			const stream = this.agent.stream(prompt);
+			await this.encodeStreamingPackets(registry, stream);
+		} catch (raw: unknown) {
+			if (APICallError.isInstance(raw)) {
+				this.appendCheckpoint(registry, {
+					type: "error",
+					message: raw.message,
+				});
+			} else if (raw instanceof Error) {
+				this.appendCheckpoint(registry, {
+					type: "error",
+					message: raw.message,
+				});
+			} else {
+				this.appendCheckpoint(registry, {
+					type: "error",
+					message: "Unknown error",
+				});
+			}
+
+			this.appendCheckpoint(registry, {
+				type: "finished",
+			});
+		}
+	}
+
+	//
+
+	public appendCheckpoint(registry: SessionWebsocketRegistry, checkpoint: CheckpointEntryTypes) {
 		if (checkpoint.type === "user") {
 			this.sessionData.isPending = true;
 			this.sessionData.promptTime = new Date().getTime();
@@ -86,39 +121,6 @@ export class Session {
 
 	private getLatestType() {
 		return this.sessionData.history.at(-1)!.type;
-	}
-
-	public async streamCheckpointDeltas(registry: SessionWebsocketRegistry, prompt: string) {
-		this.appendCheckpoint(registry, {
-			type: "user",
-			content: prompt,
-		});
-
-		try {
-			const stream = this.agent.stream(prompt);
-			await this.encodeStreamingPackets(registry, stream);
-		} catch (raw: unknown) {
-			if (APICallError.isInstance(raw)) {
-				this.appendCheckpoint(registry, {
-					type: "error",
-					message: raw.message,
-				});
-			} else if (raw instanceof Error) {
-				this.appendCheckpoint(registry, {
-					type: "error",
-					message: raw.message,
-				});
-			} else {
-				this.appendCheckpoint(registry, {
-					type: "error",
-					message: "Unknown error",
-				});
-			}
-
-			this.appendCheckpoint(registry, {
-				type: "finished",
-			});
-		}
 	}
 
 	private async encodeStreamingPackets(registry: SessionWebsocketRegistry, stream: AsyncGenerator<StreamEvents>) {
