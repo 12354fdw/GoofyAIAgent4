@@ -23,4 +23,13 @@ export class Client {
 	public connectToSession(sessionName: string): Promise<ClientSession> {
 		return ClientSession.create(sessionName, this.rpc, this.networking);
 	}
+
+	public executeCommand(prompt: string) {
+		const session = this.currentSession;
+		if (!session) return false;
+
+		return this.cmdSystem.execute(prompt, {
+			sendMessage: (message) => session.sendUserPrompt(message),
+		});
+	}
 }

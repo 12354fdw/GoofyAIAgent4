@@ -34,24 +34,42 @@ export type CommandHandler<TParams extends Record<string, z.ZodTypeAny>> = (
 	args: InferArgs<TParams>,
 ) => Promise<void> | void;
 
+export type ParsedCommandArguments<TParams extends Record<string, z.ZodTypeAny>> =
+	{ success: true; args: InferArgs<TParams> } | { success: false };
+
 export class Command<TParams extends Record<string, z.ZodTypeAny> = Record<string, z.ZodTypeAny>> {
+	private readonly schema: z.ZodTypeAny;
+
 	constructor(
 		public readonly name: string,
 		public readonly description: string,
 		public readonly parameters: Parameter[],
 		private readonly handler: CommandHandler<TParams>,
-	) {}
-
-	public execute(ctx: CommandContext, args: InferArgs<TParams>) {
-		this.handler(ctx, args);
-	}
-
-	public getArgumentsSchema() {
+	) {
 		const shape: Record<string, z.ZodTypeAny> = {};
-		for (const { name, type } of this.parameters) {
+		for (const { name, type } of parameters) {
 			shape[name] = strictCoerce(type);
 		}
+		this.schema = z.object(shape);
+	}
 
-		return z.object(shape);
+	public execute(ctx: CommandContext, args: InferArgs<TParams>) {
+		return this.handler(ctx, args);
+	}
+
+	public validateArguments(tokens: string[]): boolean {
+		return this.parseArguments(tokens).success;
+	}
+
+	public parseArguments(tokens: string[]): ParsedCommandArguments<TParams> {
+		const mapped: Record<string, unknown> = {};
+		this.parameters.forEach((param, index) => {
+			mapped[param.name] = tokens[index];
+		});
+
+		const result = this.schema.safeParse(mapped);
+		if (!result.success) return { success: false };
+
+		return { success: true, args: result.data as InferArgs<TParams> };
 	}
 }

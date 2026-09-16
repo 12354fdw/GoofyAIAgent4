@@ -1,4 +1,5 @@
 import { Command } from "./command.js";
+import { CommandContext } from "./commandContext.js";
 
 export interface ParsedCommand {
 	name: string;
@@ -35,15 +36,22 @@ export class CommandRegistry {
 	}
 
 	public isValidCommand(prompt: string) {
-		const parsed = this.parse(prompt);
-		if (!this.has(parsed.name)) return false;
+		const { name, args } = this.parse(prompt);
+		const command = this.commands.get(name);
 
-		const command = this.get(parsed.name);
+		return command ? command.validateArguments(args) : false;
+	}
 
-		const args = this.mapArguments(command, parsed.args);
+	public execute(prompt: string, ctx: CommandContext): boolean {
+		const { name, args } = this.parse(prompt);
+		const command = this.commands.get(name);
+		if (!command) return false;
 
-		const result = command.getArgumentsSchema().safeParse(args);
-		return result.success;
+		const parsed = command.parseArguments(args);
+		if (!parsed.success) return false;
+
+		command.execute(ctx, parsed.args);
+		return true;
 	}
 
 	//
@@ -56,18 +64,5 @@ export class CommandRegistry {
 			name,
 			args,
 		};
-	}
-
-	public parseArguments(cmd: Command, parsed: ParsedCommand): Record<string, string> {
-		return this.mapArguments(cmd, parsed.args);
-	}
-
-	private mapArguments(cmd: Command, args: string[]): Record<string, string> {
-		const mapped: Record<string, string> = {};
-		cmd.parameters.forEach((param, index) => {
-			mapped[param.name] = args[index];
-		});
-
-		return mapped;
 	}
 }

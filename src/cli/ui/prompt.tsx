@@ -17,7 +17,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 
 	const handleCommand = (trimPrompt: string) => {
 		if (!registry?.isValidCommand(trimPrompt)) return;
-		client?.cmdSystem.execute(trimPrompt);
+		client?.executeCommand(trimPrompt);
 		setPrompt("");
 	};
 

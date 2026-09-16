@@ -1,5 +1,6 @@
 import { registerCommands } from "./commandRegistrations.js";
 import { CommandRegistry } from "./commandRegistry.js";
+import { CommandContext } from "./commandContext.js";
 
 export class CommandSystem {
 	public readonly registry = new CommandRegistry();
@@ -8,21 +9,7 @@ export class CommandSystem {
 		registerCommands(this.registry);
 	}
 
-	public execute(prompt: string) {
-		if (!this.registry.isValidCommand(prompt)) return;
-
-		const parsed = this.registry.parse(prompt);
-		const cmd = this.registry.get(parsed.name);
-
-		const args = cmd.getArgumentsSchema().parse(this.registry.parseArguments(cmd, parsed));
-
-		cmd.execute(
-			{
-				sendMessage: () => {
-					throw new Error("not implemented!");
-				},
-			},
-			args,
-		);
+	public execute(prompt: string, ctx: CommandContext): boolean {
+		return this.registry.execute(prompt, ctx);
 	}
 }
