@@ -10,10 +10,10 @@ type CommandDetailsProps = {
 
 export const CommandDetails = ({ prompt }: CommandDetailsProps) => {
 	const client = useContext(ClientContext) as Client;
-	const cmdRegistry = client.cmdSystem.cmdRegistry;
+	const registry = client.cmdSystem.registry;
 
-	const promptInformation = cmdRegistry.extractCommandInformation(prompt);
-	const cmd = cmdRegistry.getCommand(promptInformation.commandName);
+	const parsed = registry.parse(prompt);
+	const cmd = registry.get(parsed.name);
 
 	return (
 		<Box flexDirection="column">
@@ -21,10 +21,10 @@ export const CommandDetails = ({ prompt }: CommandDetailsProps) => {
 				Command Parameters:
 			</Text>
 
-			{cmd.parameterList.map(({ name, type }, idx) => {
+			{cmd.parameters.map(({ name, type }, idx) => {
 				return (
 					<Text italic dimColor key={idx}>
-						{`  ${name.padEnd(6)}`} ({type.type.padEnd(5)}) = {promptInformation.args[idx]}
+						{`  ${name.padEnd(6)}`} ({type.type.padEnd(5)}) = {parsed.args[idx]}
 					</Text>
 				);
 			})}

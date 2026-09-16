@@ -2,21 +2,21 @@ import { registerCommands } from "./commandRegistrations.js";
 import { CommandRegistry } from "./commandRegistry.js";
 
 export class CommandSystem {
-	public readonly cmdRegistry = new CommandRegistry();
+	public readonly registry = new CommandRegistry();
 
 	constructor() {
-		registerCommands(this.cmdRegistry);
+		registerCommands(this.registry);
 	}
 
-	public runCommand(prompt: string) {
-		if (!this.cmdRegistry.verifyCommand(prompt)) return;
+	public execute(prompt: string) {
+		if (!this.registry.isValidCommand(prompt)) return;
 
-		const promptInfo = this.cmdRegistry.extractCommandInformation(prompt);
-		const cmd = this.cmdRegistry.getCommand(promptInfo.commandName);
+		const parsed = this.registry.parse(prompt);
+		const cmd = this.registry.get(parsed.name);
 
-		const args = cmd.getSchema().safeParse(this.cmdRegistry.parseParamter(cmd, promptInfo));
+		const args = cmd.getArgumentsSchema().parse(this.registry.parseArguments(cmd, parsed));
 
-		cmd.run(
+		cmd.execute(
 			{
 				sendMessage: () => {
 					throw new Error("not implemented!");

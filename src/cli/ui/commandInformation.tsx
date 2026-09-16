@@ -9,13 +9,13 @@ type CommandInformationProps = {
 
 export const CommandInformation = ({ prompt }: CommandInformationProps) => {
 	const client = useContext(ClientContext);
-	const cmdRegistry = client?.cmdSystem.cmdRegistry;
+	const registry = client?.cmdSystem.registry;
 
-	if (!cmdRegistry?.isCommand(prompt)) return;
+	if (!registry?.looksLikeCommand(prompt)) return;
 
-	const details = cmdRegistry.extractCommandInformation(prompt);
+	const details = registry.parse(prompt);
 	const hasSpaceAfterCommand = /^\s*\S+\s+/.test(prompt.slice(1));
-	return cmdRegistry.isValidCommandName(details.commandName) && hasSpaceAfterCommand ? (
+	return registry.has(details.name) && hasSpaceAfterCommand ? (
 		<CommandDetails prompt={prompt} />
 	) : (
 		<CommandSuggestions prompt={prompt} />

@@ -13,11 +13,11 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 	const [prompt, setPrompt] = useState("");
 	const client = useContext(ClientContext);
 	const session = client?.currentSession ?? null;
-	const cmdRegistry = client?.cmdSystem.cmdRegistry;
+	const registry = client?.cmdSystem.registry;
 
 	const handleCommand = (trimPrompt: string) => {
-		if (!cmdRegistry?.verifyCommand(trimPrompt)) return;
-		client?.cmdSystem.runCommand(trimPrompt);
+		if (!registry?.isValidCommand(trimPrompt)) return;
+		client?.cmdSystem.execute(trimPrompt);
 		setPrompt("");
 	};
 
@@ -40,7 +40,7 @@ export const Prompt = ({ onSubmit }: PromptProps) => {
 					onChange={setPrompt}
 					onSubmit={() => {
 						const trimPrompt = prompt.trim();
-						if (cmdRegistry?.isCommand(trimPrompt)) {
+						if (registry?.looksLikeCommand(trimPrompt)) {
 							handleCommand(trimPrompt);
 							return;
 						}

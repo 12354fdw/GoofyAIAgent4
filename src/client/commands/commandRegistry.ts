@@ -1,5 +1,10 @@
 import { Command } from "./command.js";
 
+export interface ParsedCommand {
+	name: string;
+	args: string[];
+}
+
 export class CommandRegistry {
 	private commands = new Map<string, Command>();
 
@@ -8,60 +13,61 @@ export class CommandRegistry {
 	}
 
 	public getCompletions(prompt: string): string[] {
-		const { commandName } = this.extractCommandInformation(prompt);
-		return [...this.commands.keys()].filter((name) => name.startsWith(commandName));
+		const { name } = this.parse(prompt);
+		return [...this.commands.keys()].filter((commandName) => commandName.startsWith(name));
 	}
 
-	public getCommand(name: string) {
+	public get(name: string) {
 		const cmd = this.commands.get(name);
-		if (!cmd) throw new Error(`Unable to find command "${name}`);
+		if (!cmd) throw new Error(`Unable to find command "${name}"`);
 
 		return cmd;
 	}
 
 	//
 
-	public isCommand(prompt: string) {
+	public looksLikeCommand(prompt: string) {
 		return prompt.startsWith("/");
 	}
 
-	public isValidCommandName(name: string) {
+	public has(name: string) {
 		return this.commands.has(name);
 	}
 
-	public verifyCommand(prompt: string) {
-		const info = this.extractCommandInformation(prompt);
-		if (!this.isValidCommandName(info.commandName)) return false;
+	public isValidCommand(prompt: string) {
+		const parsed = this.parse(prompt);
+		if (!this.has(parsed.name)) return false;
 
-		const command = this.getCommand(info.commandName);
+		const command = this.get(parsed.name);
 
-		const args: Record<string, string> = {};
-		command.parameterList.forEach((param, index) => {
-			args[param.name] = info.args[index];
-		});
+		const args = this.mapArguments(command, parsed.args);
 
-		const result = command.getSchema().safeParse(args);
+		const result = command.getArgumentsSchema().safeParse(args);
 		return result.success;
 	}
 
 	//
 
-	public extractCommandInformation(prompt: string) {
+	public parse(prompt: string): ParsedCommand {
 		const tokens = prompt.slice(1).trim().split(/\s+/);
-		const [commandName, ...args] = tokens;
+		const [name, ...args] = tokens;
 
 		return {
-			commandName,
+			name,
 			args,
 		};
 	}
 
-	public parseParamter(cmd: Command, promptInfo: { commandName: string; args: string[] }): Record<string, string> {
-		const parsed: Record<string, string> = {};
-		cmd.parameterList.forEach((param, index) => {
-			parsed[param.name] = promptInfo.commandName[index];
+	public parseArguments(cmd: Command, parsed: ParsedCommand): Record<string, string> {
+		return this.mapArguments(cmd, parsed.args);
+	}
+
+	private mapArguments(cmd: Command, args: string[]): Record<string, string> {
+		const mapped: Record<string, string> = {};
+		cmd.parameters.forEach((param, index) => {
+			mapped[param.name] = args[index];
 		});
 
-		return parsed;
+		return mapped;
 	}
 }

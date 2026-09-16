@@ -8,10 +8,10 @@ export function registerCommands(registry: CommandRegistry) {
 		new CommandBuilder()
 			.name("test")
 			.describe("just sends a message")
-			.execute((ctx: CommandContext) => {
+			.handler((ctx: CommandContext) => {
 				ctx.sendMessage("hello from command!");
 			})
-			.construct(),
+			.build(),
 	);
 
 	registry.register(
@@ -20,9 +20,9 @@ export function registerCommands(registry: CommandRegistry) {
 			.describe("repeats the string you provided x times")
 			.parameter("text", z.string())
 			.parameter("times", z.number().positive())
-			.execute((ctx, args) => {
+			.handler((ctx, args) => {
 				ctx.sendMessage(args.text);
 			})
-			.construct(),
+			.build(),
 	);
 }

@@ -1,8 +1,7 @@
 import z from "zod";
-import { CommandContext } from "./commandContext.js";
-import { Command } from "./command.js";
+import { Command, CommandHandler, Parameter } from "./command.js";
 
-export type InferSchemaShape<T extends Record<string, z.ZodTypeAny>> = {
+export type InferArgs<T extends Record<string, z.ZodTypeAny>> = {
 	[K in keyof T]: z.infer<T[K]>;
 };
 
@@ -10,9 +9,8 @@ export class CommandBuilder<TParams extends Record<string, z.ZodTypeAny> = Recor
 	private _name: string | undefined;
 	private description: string = "No description";
 
-	private parameterTypes: Record<string, z.ZodTypeAny> = {};
-	private parameterList: Array<{ name: string; type: z.ZodTypeAny }> = [];
-	private executor?: (ctx: CommandContext, args: InferSchemaShape<TParams>) => Promise<void> | void;
+	private parameters: Parameter[] = [];
+	private handlerFn?: CommandHandler<TParams>;
 
 	constructor() {}
 
@@ -30,30 +28,21 @@ export class CommandBuilder<TParams extends Record<string, z.ZodTypeAny> = Recor
 		name: K,
 		type: T,
 	): CommandBuilder<TParams & { [P in K]: T }> {
-		this.parameterTypes[name] = type;
-		this.parameterList.push({ name, type });
+		this.parameters.push({ name, type });
 
 		return this as unknown as CommandBuilder<TParams & { [P in K]: T }>;
 	}
 
-	public execute<K extends string, T extends z.ZodTypeAny>(
-		cb: (ctx: CommandContext, args: InferSchemaShape<TParams>) => Promise<void> | void,
-	): CommandBuilder<TParams & { [P in K]: T }> {
-		this.executor = cb;
-		return this as unknown as CommandBuilder<TParams & { [P in K]: T }>;
+	public handler(cb: CommandHandler<TParams>): CommandBuilder<TParams> {
+		this.handlerFn = cb;
+		return this;
 	}
 
-	public construct() {
+	public build() {
 		if (!this._name)
 			throw new Error(`Unable to construct command since it has no name! (read trace to see registeration`);
 
-		if (!this.executor) throw new Error(`Unable to construct command "${this._name}" because it has no executor!`);
-		return new Command<TParams>(
-			this._name,
-			this.description,
-			this.parameterList,
-			this.parameterTypes,
-			this.executor,
-		) as Command;
+		if (!this.handlerFn) throw new Error(`Unable to construct command "${this._name}" because it has no handler!`);
+		return new Command<TParams>(this._name, this.description, this.parameters, this.handlerFn) as Command;
 	}
 }

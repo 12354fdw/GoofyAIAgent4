@@ -10,9 +10,9 @@ type CommandSuggestionsProps = {
 
 export const CommandSuggestions = ({ prompt }: CommandSuggestionsProps) => {
 	const client = useContext(ClientContext) as Client;
-	const cmdRegistry = client.cmdSystem.cmdRegistry;
+	const registry = client.cmdSystem.registry;
 
-	const commands = cmdRegistry
+	const commands = registry
 		.getCompletions(prompt)
 		.sort((a, b) => a.localeCompare(b))
 		.slice(0, 5);
@@ -29,10 +29,10 @@ export const CommandSuggestions = ({ prompt }: CommandSuggestionsProps) => {
 				</Text>
 			) : (
 				commands.map((cmdName) => {
-					const cmdInformation = cmdRegistry.getCommand(cmdName);
+					const command = registry.get(cmdName);
 					return (
 						<Text key={cmdName} dimColor italic>
-							{`  /${cmdName} - ${cmdInformation.description}`}
+							{`  /${cmdName} - ${command.description}`}
 						</Text>
 					);
 				})
