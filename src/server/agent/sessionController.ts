@@ -1,5 +1,6 @@
 import { InstructionInfo } from "../util.js";
 import { ToolRegistry } from "../tool/toolRegistry.js";
+import { SessionWebsocketRegistry } from "../networking/checkpointSocketRegistry.js";
 import { Session } from "./session/session.js";
 
 export interface SessionParameters {
@@ -12,19 +13,26 @@ export class SessionController {
 	private static instance: SessionController;
 	private sessions = new Map<string, Session>();
 
-	private constructor(private toolRegistry: ToolRegistry) {
+	private constructor(
+		private toolRegistry: ToolRegistry,
+		private sessionWebsocketRegistry: SessionWebsocketRegistry,
+	) {
 		this.createSession("default-session", { model: "deepseek/deepseek-v4-flash-0731" });
 	}
 
 	public static getInstance() {
-		if (!SessionController.instance) SessionController.instance = new SessionController(ToolRegistry.getInstance());
+		if (!SessionController.instance)
+			SessionController.instance = new SessionController(
+				ToolRegistry.getInstance(),
+				SessionWebsocketRegistry.getInstance(),
+			);
 		return SessionController.instance;
 	}
 
 	public createSession(sessionName: string, params: SessionParameters) {
 		if (this.sessions.get(sessionName)) throw new Error(`Session '${sessionName}' already exists!`);
 
-		const session = new Session(sessionName, params, this.toolRegistry, this);
+		const session = new Session(sessionName, params, this.toolRegistry, this, this.sessionWebsocketRegistry);
 		this.sessions.set(sessionName, session);
 		return session;
 	}
@@ -36,7 +44,7 @@ export class SessionController {
 	}
 
 	public async runTemporaryAgent(prompt: string, params: SessionParameters) {
-		const session = new Session("tmp-agent", params, this.toolRegistry, this);
+		const session = new Session("tmp-agent", params, this.toolRegistry, this, this.sessionWebsocketRegistry);
 
 		let text = "";
 		for await (const part of session.streamRaw(prompt)) {

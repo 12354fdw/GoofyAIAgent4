@@ -129,6 +129,16 @@ export const History = ({ history }: HistoryProps) => {
 						);
 						/* eslint-enable prettier/prettier */
 					}
+
+					case "command_message": {
+						return (
+							<Box key={index} flexDirection="column" backgroundColor="#084a82" marginBottom={1}>
+								<Box paddingLeft={2}>
+									<Text>{`\n${checkpoint.content}\n`}</Text>
+								</Box>
+							</Box>
+						);
+					}
 				}
 			})}
 		</Box>

@@ -2,6 +2,7 @@ import { Remote } from "comlink";
 import { SessionParameters } from "../../server/agent/sessionController.js";
 import { ComlinkServerAPI } from "../../server/networking/comlinkServerAPI.js";
 import { ComlinkClientNetworking } from "./comlinkClientNetworking.js";
+import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 
 export class ComlinkClient {
 	private remote: Remote<ComlinkServerAPI>;
@@ -20,5 +21,9 @@ export class ComlinkClient {
 
 	public async getSessionData(sessionName: string) {
 		return await this.remote.getSessionData(sessionName);
+	}
+
+	public async appendCheckpoints(sessionName: string, checkpoints: CheckpointEntryTypes[]) {
+		await this.remote.appendCheckpoints(sessionName, checkpoints);
 	}
 }

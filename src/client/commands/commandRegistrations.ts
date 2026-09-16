@@ -21,7 +21,9 @@ export function registerCommands(registry: CommandRegistry) {
 			.parameter("text", z.string())
 			.parameter("times", z.number().positive())
 			.handler((ctx, args) => {
-				ctx.sendMessage(args.text);
+				for (let i = 0; i < args.times; i++) {
+					ctx.sendMessage(args.text);
+				}
 			})
 			.build(),
 	);

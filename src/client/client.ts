@@ -28,8 +28,13 @@ export class Client {
 		const session = this.currentSession;
 		if (!session) return false;
 
-		return this.cmdSystem.execute(prompt, {
-			sendMessage: (message) => session.sendUserPrompt(message),
+		this.rpc.appendCheckpoints(session.sessionName, [{ type: "user", content: prompt }]);
+
+		this.cmdSystem.execute(prompt, {
+			sendMessage: (message) =>
+				this.rpc.appendCheckpoints(session.sessionName, [{ type: "command_message", content: message }]),
 		});
+
+		this.rpc.appendCheckpoints(session.sessionName, [{ type: "finished" }]);
 	}
 }
