@@ -16,6 +16,7 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/jsdom": "^30.0.0",
     "@types/marked-terminal": "^6.1.1",
     "@types/node": "^26.2.0",
