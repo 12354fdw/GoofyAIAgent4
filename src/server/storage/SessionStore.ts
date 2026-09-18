@@ -5,6 +5,7 @@ import { LOGGER } from "../../shared/globals/logger.js";
 import { dbSessionData } from "./types/dbSessionData.js";
 import { Session } from "../agent/session/session.js";
 import { formatSIPrefix } from "../../shared/SIPrefixer.js";
+import { SessionParameters } from "../agent/sessionController.js";
 
 export const DATABASE_SCHEMA_VERSION = 1;
 
@@ -40,11 +41,13 @@ export class SessionStore {
 			PRAGMA user_version = ${DATABASE_SCHEMA_VERSION};
 		`);
 
-		this.sessionsDataDb.exec(`CREATE TABLE IF NOT EXISTS sessions (
-			session_name	TEXT PRIMARY KEY,
-			session_parameter	JSONB,
-			usage 			JSONB
-		)`);
+		this.sessionsDataDb.exec(
+			`CREATE TABLE IF NOT EXISTS sessions (
+			session_name		TEXT PRIMARY KEY NOT NULL,
+			session_parameter	JSONB NOT NULL,
+			usage 				JSONB NOT NULL
+		)`,
+		);
 	}
 
 	public static getInstance() {
@@ -52,7 +55,30 @@ export class SessionStore {
 		return SessionStore.instance;
 	}
 
-	public loadSessionsData() {
+	public newSessionEntry(sessionName: string, sessionParameters: SessionParameters) {
+		this.sessionsDataDb
+			.prepare(
+				`INSERT INTO sessions (session_name, session_parameter, usage)
+				VALUES (@sessionName, @sessionParameters, '')
+			`,
+			)
+			.run({
+				sessionName,
+				sessionParameters: JSON.stringify(sessionParameters),
+			});
+
+		const name = `"${sessionName.replaceAll('"', '""')}"`;
+		this.sessionsCheckpointDb.exec(
+			`CREATE TABLE IF NOT EXISTS ${name} (
+			idx			INT PRIMARY KEY NOT NULL,
+			entry		JSONB NOT NULL
+	)`,
+		);
+	}
+
+	//
+
+	public loadSessions() {
 		LOGGER.info("Loading sessions");
 		const start = performance.now();
 

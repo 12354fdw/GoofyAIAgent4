@@ -14,13 +14,15 @@ export class SessionController {
 	private static instance: SessionController;
 	private sessions = new Map<string, Session>();
 
+	private sessionStore = SessionStore.getInstance();
+
 	private constructor(
 		private toolRegistry: ToolRegistry,
 		private sessionWebsocketRegistry: SessionWebsocketRegistry,
 	) {
 		this.createSession("default-session", { model: "deepseek/deepseek-v4-flash-0731" });
 		SessionStore.getInstance().saveSessionData(this.getSession("default-session"));
-		SessionStore.getInstance().loadSessionsData();
+		SessionStore.getInstance().loadSessions();
 	}
 
 	public static getInstance() {
@@ -37,6 +39,8 @@ export class SessionController {
 
 		const session = new Session(sessionName, params, this.toolRegistry, this, this.sessionWebsocketRegistry);
 		this.sessions.set(sessionName, session);
+
+		this.sessionStore.newSessionEntry(sessionName, params);
 		return session;
 	}
 
