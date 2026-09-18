@@ -5,6 +5,7 @@ import { LOGGER } from "../../shared/globals/logger.js";
 import { dbSessionData } from "./types/dbSessionData.js";
 import { Session } from "../agent/session/session.js";
 import { formatSIPrefix } from "../../shared/SIPrefixer.js";
+import { NetworkedCheckpointDeltaData } from "../../shared/checkpoints/networkedCheckpoints.js";
 import { SessionParameters } from "../agent/sessionController.js";
 
 export const DATABASE_SCHEMA_VERSION = 1;
@@ -25,6 +26,10 @@ function getDbFromName(dbName: string) {
 	db.exec(`PRAGMA user_version = ${DATABASE_SCHEMA_VERSION}`);
 
 	return db;
+}
+
+function sanitizeSessionName(sessionName: string) {
+	return `"${sessionName.replaceAll('"', '""')}"`;
 }
 
 export class SessionStore {
@@ -67,10 +72,9 @@ export class SessionStore {
 				sessionParameters: JSON.stringify(sessionParameters),
 			});
 
-		const name = `"${sessionName.replaceAll('"', '""')}"`;
 		this.sessionsCheckpointDb.exec(
-			`CREATE TABLE IF NOT EXISTS ${name} (
-			idx			INT PRIMARY KEY NOT NULL,
+			`CREATE TABLE IF NOT EXISTS ${sanitizeSessionName(sessionName)} (
+			idx			INTEGER PRIMARY KEY AUTOINCREMENT,
 			entry		JSONB NOT NULL
 	)`,
 		);
@@ -116,5 +120,39 @@ export class SessionStore {
 				sessionParameter: JSON.stringify(sessionParameters),
 				usage: JSON.stringify(usage),
 			});
+	}
+
+	//
+
+	public appendCheckpointHistory(sessionName: string, delta: NetworkedCheckpointDeltaData) {
+		switch (delta.type) {
+			case "entry_addition": {
+				this.sessionsCheckpointDb
+					.prepare(
+						`INSERT INTO ${sanitizeSessionName(sessionName)} (entry)
+						VALUES (@entry)
+					`,
+					)
+					.run({
+						entry: JSON.stringify(delta.content),
+					});
+				break;
+			}
+
+			case "entry_modification": {
+				this.sessionsCheckpointDb
+					.prepare(
+						`UPDATE ${sanitizeSessionName(sessionName)}
+						SET entry = @entry
+						WHERE idx = @index
+					`,
+					)
+					.run({
+						index: delta.index,
+						entry: JSON.stringify(delta.content),
+					});
+				break;
+			}
+		}
 	}
 }
