@@ -10,7 +10,6 @@ import { SessionController, SessionParameters } from "../sessionController.js";
 export class Session {
 	private agent: Agent;
 	private encoder: StreamPacketEncoder;
-
 	private sessionData: SessionData = {
 		history: [],
 		lastUserPrompt: "",
@@ -31,13 +30,13 @@ export class Session {
 	};
 
 	constructor(
-		private sessionName: string,
-		params: SessionParameters,
+		public readonly sessionName: string,
+		private readonly sessionParameters: SessionParameters,
 		toolRegistry: ToolRegistry,
-		private sessionController: SessionController,
-		private registry: SessionWebsocketRegistry,
+		private readonly sessionController: SessionController,
+		private readonly registry: SessionWebsocketRegistry,
 	) {
-		this.agent = new Agent(params, toolRegistry, this.sessionData, sessionController);
+		this.agent = new Agent(sessionParameters, toolRegistry, this.sessionData, sessionController);
 		this.encoder = new StreamPacketEncoder(
 			this.sessionName,
 			this.registry,
@@ -48,6 +47,10 @@ export class Session {
 
 	public getSessionData() {
 		return this.sessionData;
+	}
+
+	public getSessionParameters() {
+		return this.sessionParameters;
 	}
 
 	//

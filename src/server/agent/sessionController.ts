@@ -2,6 +2,7 @@ import { InstructionInfo } from "../util.js";
 import { ToolRegistry } from "../tool/toolRegistry.js";
 import { SessionWebsocketRegistry } from "../networking/checkpointSocketRegistry.js";
 import { Session } from "./session/session.js";
+import { SessionStore } from "../storage/SessionStore.js";
 
 export interface SessionParameters {
 	model: string;
@@ -18,6 +19,8 @@ export class SessionController {
 		private sessionWebsocketRegistry: SessionWebsocketRegistry,
 	) {
 		this.createSession("default-session", { model: "deepseek/deepseek-v4-flash-0731" });
+		SessionStore.getInstance().saveSessionData(this.getSession("default-session"));
+		SessionStore.getInstance().loadSessionsData();
 	}
 
 	public static getInstance() {
