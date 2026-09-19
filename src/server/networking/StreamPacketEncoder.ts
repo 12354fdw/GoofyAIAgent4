@@ -1,6 +1,7 @@
 import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { NetworkedCheckpointDeltaData } from "../../shared/checkpoints/networkedCheckpoints.js";
 import { SessionUsage } from "../../shared/types/sessionUsage.js";
+import { Session } from "../agent/session/session.js";
 import { StreamEvents } from "../agent/session/streamEvents.js";
 import { SessionStore } from "../storage/SessionStore.js";
 import { SessionWebsocketRegistry } from "./checkpointSocketRegistry.js";
@@ -9,13 +10,17 @@ export class StreamPacketEncoder {
 	private lastTotalTokens = 0;
 	private persistedCount = 0;
 
+	private sessionName: string;
+
 	constructor(
-		private sessionName: string,
+		private session: Session,
 		private registry: SessionWebsocketRegistry,
 		private historyRef: CheckpointEntryTypes[],
 		private usage: SessionUsage,
 		private store: SessionStore,
-	) {}
+	) {
+		this.sessionName = session.sessionName;
+	}
 
 	private persistCheckpoint(entry: CheckpointEntryTypes) {
 		this.store.appendCheckpoint(this.sessionName, entry);
@@ -77,6 +82,7 @@ export class StreamPacketEncoder {
 						this.lastTotalTokens = part.usage.totalTokens;
 
 						this.appendCheckpoint({ type: "step_end", usage: this.usage });
+						this.store.saveSessionData(this.session);
 						break;
 					}
 

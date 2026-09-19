@@ -79,6 +79,26 @@ export class SessionStore {
 
 	//
 
+	public saveSessionData(session: Session) {
+		const name = session.sessionName;
+		const sessionParameters = session.getSessionParameters();
+		const usage = session.getSessionData().usage;
+
+		this.db
+			.prepare(
+				`INSERT INTO sessions (session_name, session_parameter, usage)
+				 VALUES (@sessionName, @sessionParameter, @usage)
+				 ON CONFLICT(session_name) DO UPDATE SET
+					session_parameter = excluded.session_parameter,
+					usage = excluded.usage`,
+			)
+			.run({
+				sessionName: name,
+				sessionParameter: JSON.stringify(sessionParameters),
+				usage: JSON.stringify(usage),
+			});
+	}
+
 	public loadSessions() {
 		LOGGER.info("Loading sessions");
 		const start = performance.now();
@@ -103,26 +123,6 @@ export class SessionStore {
 				};
 			},
 		);
-	}
-
-	public saveSessionData(session: Session) {
-		const name = session.sessionName;
-		const sessionParameters = session.getSessionParameters();
-		const usage = session.getSessionData().usage;
-
-		this.db
-			.prepare(
-				`INSERT INTO sessions (session_name, session_parameter, usage)
-				 VALUES (@sessionName, @sessionParameter, @usage)
-				 ON CONFLICT(session_name) DO UPDATE SET
-					session_parameter = excluded.session_parameter,
-					usage = excluded.usage`,
-			)
-			.run({
-				sessionName: name,
-				sessionParameter: JSON.stringify(sessionParameters),
-				usage: JSON.stringify(usage),
-			});
 	}
 
 	//

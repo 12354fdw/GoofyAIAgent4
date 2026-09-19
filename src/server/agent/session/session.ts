@@ -39,7 +39,7 @@ export class Session {
 	) {
 		this.agent = new Agent(sessionParameters, toolRegistry, this.sessionData, sessionController);
 		this.encoder = new StreamPacketEncoder(
-			this.sessionName,
+			this,
 			this.registry,
 			this.sessionData.history,
 			this.sessionData.usage,
