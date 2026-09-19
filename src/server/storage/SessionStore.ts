@@ -4,7 +4,6 @@ import { ModelMessage } from "ai";
 import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { DATA_DIRECTORY } from "../../shared/globals/index.js";
 import { LOGGER } from "../../shared/globals/logger.js";
-import { dbSessionData } from "./types/dbSessionData.js";
 import { Session } from "../agent/session/session.js";
 import { formatSIPrefix } from "../../shared/SIPrefixer.js";
 import { NetworkedCheckpointDeltaData } from "../../shared/checkpoints/networkedCheckpoints.js";
@@ -85,20 +84,26 @@ export class SessionStore {
 		LOGGER.info("Loading sessions");
 		const start = performance.now();
 
-		const sessionsData = dbSessionData.parse(
-			this.db
-				.prepare(
-					`SELECT session_name AS sessionName,
-						json(session_parameter) AS sessionParameter,
-						json(usage) AS usage
-					 FROM sessions`,
-				)
-				.all(),
-		);
+		const rows = this.db
+			.prepare(
+				`SELECT session_name AS sessionName,
+				json(session_parameter) AS sessionParameter,
+				json(usage) AS usage
+				FROM sessions`,
+			)
+			.all();
 
 		LOGGER.info(`Loaded sessions in ${formatSIPrefix((performance.now() - start) / 1000)}s`);
 
-		return sessionsData;
+		return (rows as { sessionName: string; sessionParameter: string; usage: string }[]).map(
+			({ sessionName, sessionParameter, usage }) => {
+				return {
+					sessionName,
+					sessionParameter,
+					usage,
+				};
+			},
+		);
 	}
 
 	public saveSessionData(session: Session) {
