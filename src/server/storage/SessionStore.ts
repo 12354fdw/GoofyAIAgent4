@@ -4,9 +4,8 @@ import { ModelMessage } from "ai";
 import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { DATA_DIRECTORY } from "../../shared/globals/index.js";
 import { LOGGER } from "../../shared/globals/logger.js";
-import { Session } from "../agent/session/session.js";
+import type { Session } from "../agent/session/session.js";
 import { formatSIPrefix } from "../../shared/SIPrefixer.js";
-import { NetworkedCheckpointDeltaData } from "../../shared/checkpoints/networkedCheckpoints.js";
 import { SessionParameters } from "../agent/sessionController.js";
 
 export const DATABASE_SCHEMA_VERSION = 1;
@@ -128,40 +127,19 @@ export class SessionStore {
 
 	//
 
-	public appendCheckpointHistory(sessionName: string, delta: NetworkedCheckpointDeltaData) {
-		switch (delta.type) {
-			case "entry_addition": {
-				this.db
-					.prepare(
-						`INSERT INTO checkpoints (session_name, idx, entry)
-						SELECT @sessionName, COALESCE(MAX(idx), 0) + 1, @entry
-						FROM checkpoints
-						WHERE session_name = @sessionName
-					`,
-					)
-					.run({
-						sessionName,
-						entry: JSON.stringify(delta.content),
-					});
-				break;
-			}
-
-			case "entry_modification": {
-				this.db
-					.prepare(
-						`UPDATE checkpoints
-						SET entry = @entry
-						WHERE session_name = @sessionName AND idx = @index
-					`,
-					)
-					.run({
-						sessionName,
-						index: delta.index,
-						entry: JSON.stringify(delta.content),
-					});
-				break;
-			}
-		}
+	public appendCheckpoint(sessionName: string, entry: CheckpointEntryTypes) {
+		this.db
+			.prepare(
+				`INSERT INTO checkpoints (session_name, idx, entry)
+				SELECT @sessionName, COALESCE(MAX(idx), -1) + 1, @entry
+				FROM checkpoints
+				WHERE session_name = @sessionName
+			`,
+			)
+			.run({
+				sessionName,
+				entry: JSON.stringify(entry),
+			});
 	}
 
 	public loadCheckpoints(sessionName: string) {

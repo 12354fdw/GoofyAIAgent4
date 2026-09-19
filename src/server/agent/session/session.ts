@@ -3,6 +3,7 @@ import { CheckpointEntryTypes } from "../../../shared/checkpoints/checkpointType
 import { SessionData } from "../../../shared/types/sessionData.js";
 import { StreamPacketEncoder } from "../../networking/StreamPacketEncoder.js";
 import { SessionWebsocketRegistry } from "../../networking/checkpointSocketRegistry.js";
+import { SessionStore } from "../../storage/SessionStore.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { Agent } from "./agent.js";
 import { SessionController, SessionParameters } from "../sessionController.js";
@@ -42,6 +43,7 @@ export class Session {
 			this.registry,
 			this.sessionData.history,
 			this.sessionData.usage,
+			SessionStore.getInstance(),
 		);
 	}
 

@@ -6,7 +6,15 @@ export type StreamEvents =
 			content: string;
 	  }
 	| {
+			type: "finish_text";
+			content: string;
+	  }
+	| {
 			type: "reasoning";
+			content: string;
+	  }
+	| {
+			type: "finish_reasoning";
 			content: string;
 	  }
 	| {

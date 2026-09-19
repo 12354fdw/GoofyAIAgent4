@@ -36,13 +36,30 @@ export class StreamController {
 		} as never);
 		this.streamResult = result;
 
+		let reasoningBuffer = "";
+		let textBuffer = "";
+
 		for await (const part of result.fullStream) {
 			switch (part.type) {
-				case "text-delta":
-					yield { type: "token", content: part.text };
+				case "reasoning-start":
+					reasoningBuffer = "";
 					break;
 				case "reasoning-delta":
+					reasoningBuffer += part.text;
 					yield { type: "reasoning", content: part.text };
+					break;
+				case "reasoning-end":
+					yield { type: "finish_reasoning", content: reasoningBuffer };
+					break;
+				case "text-start":
+					textBuffer = "";
+					break;
+				case "text-delta":
+					textBuffer += part.text;
+					yield { type: "token", content: part.text };
+					break;
+				case "text-end":
+					yield { type: "finish_text", content: textBuffer };
 					break;
 				case "tool-call":
 					yield {
