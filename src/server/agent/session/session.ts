@@ -37,7 +37,15 @@ export class Session {
 		private readonly sessionController: SessionController,
 		private readonly registry: SessionWebsocketRegistry,
 	) {
-		this.agent = new Agent(sessionParameters, toolRegistry, this.sessionData, sessionController);
+		this.agent = new Agent(
+			sessionName,
+			sessionParameters,
+			toolRegistry,
+			this.sessionData,
+			SessionStore.getInstance(),
+			sessionController,
+		);
+
 		this.encoder = new StreamPacketEncoder(
 			this,
 			this.registry,

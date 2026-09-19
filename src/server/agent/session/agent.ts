@@ -4,6 +4,7 @@ import { StreamEvents } from "./streamEvents.js";
 import { SessionController, SessionParameters } from "../sessionController.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
 import { SessionData } from "../../../shared/types/sessionData.js";
+import { SessionStore } from "../../storage/SessionStore.js";
 
 export class Agent {
 	private streamController: StreamController;
@@ -12,9 +13,11 @@ export class Agent {
 	private params: SessionParameters;
 
 	constructor(
+		private sessionName: string,
 		_params: SessionParameters,
 		toolRegistry: ToolRegistry,
 		sessionDataRef: SessionData,
+		private store: SessionStore,
 		private sessionController: SessionController,
 	) {
 		this.params = {
@@ -37,11 +40,22 @@ export class Agent {
 			content: prompt,
 		});
 
+		this.store.appendModelMessage(this.sessionName, {
+			role: "user",
+			content: prompt,
+		});
+
 		for await (const part of this.streamController.stream(this.messages)) {
 			yield part;
 		}
 
 		const responseMessages = await this.streamController.getResponseMessages();
-		if (responseMessages) this.messages.push(...responseMessages);
+		if (responseMessages) {
+			this.messages.push(...responseMessages);
+
+			responseMessages.forEach((message) => {
+				this.store.appendModelMessage(this.sessionName, message);
+			});
+		}
 	}
 }
