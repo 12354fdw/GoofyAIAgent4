@@ -1,5 +1,7 @@
 import Database from "better-sqlite3";
 import path from "path";
+import { ModelMessage } from "ai";
+import { CheckpointEntryTypes } from "../../shared/checkpoints/checkpointTypes.js";
 import { DATA_DIRECTORY } from "../../shared/globals/index.js";
 import { LOGGER } from "../../shared/globals/logger.js";
 import { dbSessionData } from "./types/dbSessionData.js";
@@ -13,9 +15,9 @@ export const DATABASE_SCHEMA_VERSION = 1;
 function getDbFromName(dbName: string) {
 	const db = new Database(path.join(DATA_DIRECTORY, "db", `${dbName}.sqlite3`));
 	db.exec(`
-			PRAGMA journal_mode = WAL;
-			PRAGMA synchronous = NORMAL;
-			PRAGMA foreign_keys = ON;
+		PRAGMA journal_mode = WAL;
+		PRAGMA synchronous = NORMAL;
+		PRAGMA foreign_keys = ON;
 	`);
 
 	const version = db.pragma("user_version", { simple: true }) as number;
@@ -28,30 +30,34 @@ function getDbFromName(dbName: string) {
 	return db;
 }
 
-function sanitizeSessionName(sessionName: string) {
-	return `"${sessionName.replaceAll('"', '""')}"`;
-}
-
 export class SessionStore {
 	private static instance: SessionStore;
-	private readonly sessionsDataDb = getDbFromName("sessionsData");
-	private readonly sessionsCheckpointDb = getDbFromName("sessionsCheckpoints");
-	private readonly sessionsMessagesDb = getDbFromName("sessionsModelMessages");
+	private readonly db = getDbFromName("sessionStore");
 
 	private constructor() {
-		this.sessionsDataDb.exec(`
-			PRAGMA journal_mode = WAL;
-			PRAGMA synchronous = NORMAL;
-			PRAGMA foreign_keys = ON;
-			PRAGMA user_version = ${DATABASE_SCHEMA_VERSION};
-		`);
-
-		this.sessionsDataDb.exec(
+		this.db.exec(
 			`CREATE TABLE IF NOT EXISTS sessions (
-			session_name		TEXT PRIMARY KEY NOT NULL,
-			session_parameter	JSONB NOT NULL,
-			usage 				JSONB NOT NULL
-		)`,
+				session_name		TEXT PRIMARY KEY NOT NULL,
+				session_parameter	JSONB NOT NULL,
+				usage				JSONB NOT NULL
+			);
+
+			CREATE TABLE IF NOT EXISTS checkpoints (
+				session_name	TEXT NOT NULL,
+				idx				INTEGER NOT NULL,
+				entry			JSONB NOT NULL,
+				PRIMARY KEY (session_name, idx),
+				FOREIGN KEY (session_name) REFERENCES sessions(session_name) ON DELETE CASCADE
+			);
+
+			CREATE TABLE IF NOT EXISTS model_messages (
+				session_name	TEXT NOT NULL,
+				idx				INTEGER NOT NULL,
+				entry			JSONB NOT NULL,
+				PRIMARY KEY (session_name, idx),
+				FOREIGN KEY (session_name) REFERENCES sessions(session_name) ON DELETE CASCADE
+			);
+		`,
 		);
 	}
 
@@ -61,7 +67,7 @@ export class SessionStore {
 	}
 
 	public newSessionEntry(sessionName: string, sessionParameters: SessionParameters) {
-		this.sessionsDataDb
+		this.db
 			.prepare(
 				`INSERT INTO sessions (session_name, session_parameter, usage)
 				VALUES (@sessionName, @sessionParameters, '')
@@ -71,13 +77,6 @@ export class SessionStore {
 				sessionName,
 				sessionParameters: JSON.stringify(sessionParameters),
 			});
-
-		this.sessionsCheckpointDb.exec(
-			`CREATE TABLE IF NOT EXISTS ${sanitizeSessionName(sessionName)} (
-			idx			INTEGER PRIMARY KEY AUTOINCREMENT,
-			entry		JSONB NOT NULL
-	)`,
-		);
 	}
 
 	//
@@ -87,7 +86,7 @@ export class SessionStore {
 		const start = performance.now();
 
 		const sessionsData = dbSessionData.parse(
-			this.sessionsDataDb
+			this.db
 				.prepare(
 					`SELECT session_name AS sessionName,
 						json(session_parameter) AS sessionParameter,
@@ -107,7 +106,7 @@ export class SessionStore {
 		const sessionParameters = session.getSessionParameters();
 		const usage = session.getSessionData().usage;
 
-		this.sessionsDataDb
+		this.db
 			.prepare(
 				`INSERT INTO sessions (session_name, session_parameter, usage)
 				 VALUES (@sessionName, @sessionParameter, @usage)
@@ -127,32 +126,81 @@ export class SessionStore {
 	public appendCheckpointHistory(sessionName: string, delta: NetworkedCheckpointDeltaData) {
 		switch (delta.type) {
 			case "entry_addition": {
-				this.sessionsCheckpointDb
+				this.db
 					.prepare(
-						`INSERT INTO ${sanitizeSessionName(sessionName)} (entry)
-						VALUES (@entry)
+						`INSERT INTO checkpoints (session_name, idx, entry)
+						SELECT @sessionName, COALESCE(MAX(idx), 0) + 1, @entry
+						FROM checkpoints
+						WHERE session_name = @sessionName
 					`,
 					)
 					.run({
+						sessionName,
 						entry: JSON.stringify(delta.content),
 					});
 				break;
 			}
 
 			case "entry_modification": {
-				this.sessionsCheckpointDb
+				this.db
 					.prepare(
-						`UPDATE ${sanitizeSessionName(sessionName)}
+						`UPDATE checkpoints
 						SET entry = @entry
-						WHERE idx = @index
+						WHERE session_name = @sessionName AND idx = @index
 					`,
 					)
 					.run({
+						sessionName,
 						index: delta.index,
 						entry: JSON.stringify(delta.content),
 					});
 				break;
 			}
 		}
+	}
+
+	public loadCheckpoints(sessionName: string) {
+		const rows = this.db
+			.prepare(
+				`SELECT json(entry) AS entry
+				FROM checkpoints
+				WHERE session_name = ?
+				ORDER BY idx ASC
+			`,
+			)
+			.all(sessionName) as { entry: string }[];
+
+		return rows.map(({ entry }) => JSON.parse(entry) as CheckpointEntryTypes);
+	}
+
+	//
+
+	public appendModelMessage(sessionName: string, message: ModelMessage) {
+		this.db
+			.prepare(
+				`INSERT INTO model_messages (session_name, idx, entry)
+				SELECT @sessionName, COALESCE(MAX(idx), 0) + 1, @entry
+				FROM model_messages
+				WHERE session_name = @sessionName
+			`,
+			)
+			.run({
+				sessionName,
+				entry: JSON.stringify(message),
+			});
+	}
+
+	public loadModelMessages(sessionName: string) {
+		const rows = this.db
+			.prepare(
+				`SELECT json(entry) AS entry
+				FROM model_messages
+				WHERE session_name = ?
+				ORDER BY idx ASC
+			`,
+			)
+			.all(sessionName) as { entry: string }[];
+
+		return rows.map(({ entry }) => JSON.parse(entry) as ModelMessage);
 	}
 }
