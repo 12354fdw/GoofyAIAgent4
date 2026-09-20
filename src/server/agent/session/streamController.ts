@@ -3,6 +3,7 @@ import { openrouter, type OpenRouterUsageAccounting } from "@openrouter/ai-sdk-p
 import { SessionController, SessionParameters } from "../sessionController.js";
 import { readPrompt } from "../../util.js";
 import { ToolRegistry } from "../../tool/toolRegistry.js";
+import { SessionStore } from "../../storage/SessionStore.js";
 import { toolApproval } from "../security.js";
 import { StreamEvents } from "./streamEvents.js";
 import { SessionData } from "../../../shared/types/sessionData.js";
@@ -19,6 +20,8 @@ export class StreamController {
 	private streamResult?: Awaited<ReturnType<ToolLoopAgent["stream"]>>;
 
 	constructor(
+		private sessionName: string,
+		private store: SessionStore,
 		private sessionDataRef: SessionData,
 		private params: SessionParameters,
 		private toolRegistry: ToolRegistry,
@@ -140,6 +143,12 @@ export class StreamController {
 				this.messagesController.setMessages(compacted);
 
 				return { messages: compacted };
+			},
+
+			onStepEnd: ({ response }) => {
+				response.messages.forEach((message) => {
+					this.store.appendModelMessage(this.sessionName, message);
+				});
 			},
 
 			toolApproval: ({ toolCall }) => toolApproval(toolCall, this.sessionController, this.toolRegistry),

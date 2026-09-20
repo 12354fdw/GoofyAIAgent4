@@ -26,12 +26,20 @@ export class Agent {
 			toolBlacklist: _params.toolBlacklist ?? [],
 		};
 
-		this.streamController = new StreamController(sessionDataRef, this.params, toolRegistry, sessionController, {
-			getMessages: () => this.messages,
-			setMessages: (messages) => {
-				this.messages = messages;
+		this.streamController = new StreamController(
+			sessionName,
+			store,
+			sessionDataRef,
+			this.params,
+			toolRegistry,
+			sessionController,
+			{
+				getMessages: () => this.messages,
+				setMessages: (messages) => {
+					this.messages = messages;
+				},
 			},
-		});
+		);
 	}
 
 	public async *stream(prompt: string): AsyncGenerator<StreamEvents> {
@@ -52,10 +60,6 @@ export class Agent {
 		const responseMessages = await this.streamController.getResponseMessages();
 		if (responseMessages) {
 			this.messages.push(...responseMessages);
-
-			responseMessages.forEach((message) => {
-				this.store.appendModelMessage(this.sessionName, message);
-			});
 		}
 	}
 }
