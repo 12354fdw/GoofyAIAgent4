@@ -24,6 +24,7 @@ export class Agent {
 			model: _params.model,
 			instruction: _params.instruction ?? "SYSTEM/AGENT.md",
 			toolBlacklist: _params.toolBlacklist ?? [],
+			persist: _params.persist !== false,
 		};
 
 		this.streamController = new StreamController(
@@ -48,10 +49,11 @@ export class Agent {
 			content: prompt,
 		});
 
-		this.store.appendModelMessage(this.sessionName, {
-			role: "user",
-			content: prompt,
-		});
+		if (this.params.persist)
+			this.store.appendModelMessage(this.sessionName, {
+				role: "user",
+				content: prompt,
+			});
 
 		for await (const part of this.streamController.stream(this.messages)) {
 			yield part;

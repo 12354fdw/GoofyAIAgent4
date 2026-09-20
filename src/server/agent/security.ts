@@ -1,6 +1,7 @@
 import { Tool, TypedToolCall } from "ai";
 import { ToolRegistry } from "../tool/toolRegistry.js";
 import { SessionController } from "./sessionController.js";
+import { LOGGER } from "../../shared/globals/logger.js";
 
 export async function toolApproval(
 	toolCall: TypedToolCall<NoInfer<{ [k: string]: Tool }>>,
@@ -23,11 +24,12 @@ export async function toolApproval(
 					instruction: "SYSTEM/SECURITY.md",
 					// block all tools
 					toolBlacklist: Object.keys(toolRegistry.getTools()),
+					persist: false,
 				},
 			),
 		);
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (e) {
+		LOGGER.error("Approval errored! trace:", e);
 		return { type: "denied", reason: "Approval Errored! Assuming denied!" };
 	}
 

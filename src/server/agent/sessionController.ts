@@ -8,6 +8,7 @@ export interface SessionParameters {
 	model: string;
 	instruction?: InstructionInfo;
 	toolBlacklist?: string[];
+	persist?: boolean;
 }
 
 export class SessionController {

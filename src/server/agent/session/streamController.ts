@@ -146,6 +146,7 @@ export class StreamController {
 			},
 
 			onStepEnd: ({ response }) => {
+				if (this.params.persist === false) return;
 				response.messages.forEach((message) => {
 					this.store.appendModelMessage(this.sessionName, message);
 				});
